@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 	timespec_get(&start_time, TIME_UTC);
 	
 	// open the new file
-	my_file = fopen("/home/ug/wattersb2/data/week2/c_time_out.txt", "w");
+	my_file = fopen("./data/c_time_out.txt", "a");
 	
 	// iterates over all numbers up the input
 	for (i = 0; i < input; i++)
