@@ -15,7 +15,7 @@ def main():
     start_time = time.time()
     
     # open or create a new file
-    f = open("./data/python_time_out.txt", "a")
+    f = open("./data/python_time_out.txt", "w")
 
     # iterates over all numbers up to the input
     for i in range(in_arg):
