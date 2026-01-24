@@ -4,7 +4,6 @@
 
 double to_second_float(struct timespec in_time);
 struct timespec calculate_runtime(struct timespec start_time, struct timespec end_time);
-FILE *my_file;
 
 int main(int argc, char **argv) 
 {
@@ -13,7 +12,8 @@ int main(int argc, char **argv)
 	i = input = 0;
 	struct timespec start_time, end_time, time_diff;
 	double runtime = 0.0;
-
+	FILE *my_file, *data_file;
+	
 	// checks if there are the right number of arguments
 	if (argc == 2)
 	{
@@ -40,28 +40,26 @@ int main(int argc, char **argv)
 		// prints the index to the file
 		fprintf(my_file, "%d, ", i);
 	}
-	// gets the time after the loop
-        timespec_get(&end_time, TIME_UTC);
-
-	// calculates the runtime
-	time_diff = calculate_runtime(start_time, end_time);
-	runtime = to_second_float(time_diff);
-
-
-	// outputs the runtime tp the file
-	fprintf(my_file, "\n\nRuntime for core loop: %lf seconds.\n\n", runtime);
 
 	// close the file
 	fclose(my_file);
 
+	// gets the time after the loop and saving the file
+        timespec_get(&end_time, TIME_UTC);
+	
 	// calculates the runtime including the file saving
 	time_diff = calculate_runtime(start_time, end_time);
 	runtime = to_second_float(time_diff);
 
-
 	// outputs the runtime
-	printf("\n\nRuntime for core loop: %lf seconds.\n\n", runtime);
+	printf("\n\nRuntime for core loop and saving the file: %lf seconds.\n\n", runtime);
 
+	// Save the runtime and input number to an output file
+	data_file = fopen("./data/c_time_save_results.txt", "a");
+	// File format: number of iterations, run time
+	fprintf(data_file, "%d, %lf \n", input, runtime);
+	fclose(data_file);
+	
 	return 0;
 }
 

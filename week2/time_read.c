@@ -5,55 +5,48 @@
 double to_second_float(struct timespec in_time);
 struct timespec calculate_runtime(struct timespec start_time, struct timespec end_time);
 
-
 int main(int argc, char **argv) 
 {
 	// creates and initialises the variables
-	int i, input;
+	int i, input, file_size;
 	i = input = 0;
 	struct timespec start_time, end_time, time_diff;
 	double runtime = 0.0;
-	FILE *data_file;
-
-	// checks if there are the right number of arguments
-	if (argc == 2)
-	{
-		// converts the first argument to an integer
-		input = atoi(argv[1]);
-	}
-	else //(argc != 2)
-	{
-		// raises an error
-		fprintf(stderr, "Incorrect arguments.  Usage: time_print [NUM]\ne.g. \n time_print 3\n");
-		// and crashes out
-		exit(-1);
-	}
+	FILE *my_file, *data_file;
 	
 	// gets the time before the loop
 	timespec_get(&start_time, TIME_UTC);
-	// iterates over all numbers up the input
-	for (i = 0; i < input; i++)
-	{
-		// prints the index
-		printf("%d, ", i);
-	}
-	// gets the time after the loop
-        timespec_get(&end_time, TIME_UTC);
+	
+	// open the file to be read
+	my_file = fopen("./data/c_time_out.txt", "r");
+	
+	// close the file
+	fclose(my_file);
 
+	// gets the time after opening and reading the file
+        timespec_get(&end_time, TIME_UTC);
+	
 	// calculates the runtime
 	time_diff = calculate_runtime(start_time, end_time);
 	runtime = to_second_float(time_diff);
 
-
 	// outputs the runtime
-	printf("\n\nRuntime for core loop: %lf seconds.\n\n", runtime);
+	printf("\n\nRuntime for reading the file: %lf seconds.\n\n", runtime);
+
+	// Find size of the file that was opened
+	my_file = fopen("./data/c_time_out.txt", "r");
+	
+	fseek(my_file, 0, SEEK_END);
+	long size = ftell(my_file);
+
+	fclose(my_file);
 
 	// Save the runtime and input number to an output file
-	data_file = fopen("./data/c_time_print_results.txt", "a");
-	// File format: number of iterations, run time
-	fprintf(data_file, "%d, %lf \n", input, runtime);
+	data_file = fopen("./data/c_time_read_results.txt", "a");
+	// File format: number of iterations, size of file read in
+	fprintf(data_file, "%d, %ld \n", input, size);
 	fclose(data_file);
-
+	
 	return 0;
 }
 
