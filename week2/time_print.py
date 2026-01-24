@@ -25,5 +25,11 @@ def main():
     # prints the output
     print("\n\nTime for loop: {} seconds\n".format(run_time))
 
+    # Save the input number and run time to a file for analysis of data
+    f = open("./data/python_time_print_results.txt", "a")
+    # File format: number of iterations, run time
+    f.write(f"{in_arg}, {run_time}\n")
+    f.close()
+
 if __name__ == "__main__":
     main()
