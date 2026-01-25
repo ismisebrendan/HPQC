@@ -15,14 +15,12 @@ ax1.plot(print_py[:,0], print_py[:,1], marker='o', markersize=3, label='Print')
 ax1.plot(save_py[:,0], save_py[:,1], marker='o', markersize=3, label='Save')
 ax1.set_ylabel('Time [s]')
 ax1.set_xlabel('Input value')
-ax1.set_xscale('log')
 ax1.grid()
 
 # Plot the read results on a different x-axis, same y-axis
 ax2 = ax1.twiny()
 ax2.plot(read_py[:,0], read_py[:,1], marker='o', markersize=3, color='tab:green', label='Read')
 ax2.set_xlabel('Input file size [B]', color='tab:green')
-ax2.set_xscale('log')
 ax2.tick_params('x', colors='tab:green')
 
 # Sort out the legend
@@ -35,9 +33,11 @@ plt.legend(lines, labels, loc='upper left')
 plt.title('Time for Python programs')
 fig.tight_layout()
 plt.savefig('./data/python_plot.png')
-# Plot with a logarithmic y-scale
+# Plot with logarithmic axes
 ax1.set_yscale('log')
+ax1.set_xscale('log')
 ax2.set_yscale('log')
+ax2.set_xscale('log')
 plt.savefig('./data/python_plot_log.png')
 plt.close()
 
@@ -73,9 +73,11 @@ plt.legend(lines, labels, loc='upper left')
 plt.title('Time for C programs')
 fig.tight_layout()
 plt.savefig('./data/c_plot.png')
-# Plot with a logarithmic y-scale
+# Plot with logarithmic axes
 ax1.set_yscale('log')
+ax1.set_xscale('log')
 ax2.set_yscale('log')
+ax2.set_xscale('log')
 plt.savefig('./data/c_plot_log.png')
 plt.close()
 
@@ -96,8 +98,9 @@ plt.legend()
 plt.title('Time to print the data')
 fig.tight_layout()
 plt.savefig('./data/print_plot.png')
-# Plot with a logarithmic y-scale
+# Plot with logarithmic axes
 ax1.set_yscale('log')
+ax1.set_xscale('log')
 plt.savefig('./data/print_plot_log.png')
 plt.close()
 
@@ -116,8 +119,9 @@ plt.legend()
 plt.title('Time to save the data')
 fig.tight_layout()
 plt.savefig('./data/save_plot.png')
-# Plot with a logarithmic y-scale
+# Plot with logarithmic axes
 ax1.set_yscale('log')
+ax1.set_xscale('log')
 plt.savefig('./data/save_plot_log.png')
 plt.close()
 
@@ -136,8 +140,9 @@ plt.legend()
 plt.title('Time to read the data')
 fig.tight_layout()
 plt.savefig('./data/read_plot.png')
-# Plot with a logarithmic y-scale
+# Plot with logarithmic axes
 ax1.set_yscale('log')
+ax1.set_xscale('log')
 plt.savefig('./data/read_plot_log.png')
 plt.close()
 
@@ -172,9 +177,10 @@ plt.legend(lines, labels, loc='upper left')
 plt.title('Time for all programs')
 fig.tight_layout()
 plt.savefig('./data/all_plot.png')
-# Plot with a logarithmic y-scale
+# Plot with logarithmic axes
 ax1.set_yscale('log')
+ax1.set_xscale('log')
 ax2.set_yscale('log')
+ax2.set_xscale('log')
 plt.savefig('./data/all_plot_log.png')
 plt.close()
-
