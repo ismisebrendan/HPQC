@@ -43,8 +43,8 @@ int main(int argc, char **argv)
 
 	// Save the runtime and input number to an output file
 	data_file = fopen("./data/c_time_read_results.txt", "a");
-	// File format: number of iterations, size of file read in
-	fprintf(data_file, "%d, %ld \n", input, size);
+	// File format: size of file, run time
+	fprintf(data_file, "%ld, %lf \n", size, runtime);
 	fclose(data_file);
 	
 	return 0;
