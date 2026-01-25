@@ -53,14 +53,12 @@ ax1.plot(print_c[:,0], print_c[:,1], marker='o', markersize=3, label='Print')
 ax1.plot(save_c[:,0], save_c[:,1], marker='o', markersize=3, label='Save')
 ax1.set_ylabel('Time [s]')
 ax1.set_xlabel('Input value')
-ax1.set_xscale('log')
 ax1.grid()
 
 # Plot the read results on a different x-axis, same y-axis
 ax2 = ax1.twiny()
 ax2.plot(read_c[:,0], read_c[:,1], marker='o', markersize=3, color='tab:green', label='Read')
 ax2.set_xlabel('Input file size [B]', color='tab:green')
-ax2.set_xscale('log')
 ax2.tick_params('x', colors='tab:green')
 
 # Sort out the legend
@@ -90,7 +88,6 @@ ax1.plot(print_py[:,0], print_py[:,1], marker='o', markersize=3, label='Python')
 ax1.plot(print_c[:,0], print_c[:,1], marker='o', markersize=3, label='C')
 ax1.set_ylabel('Time [s]')
 ax1.set_xlabel('Input value')
-ax1.set_xscale('log')
 ax1.grid()
 
 plt.legend()
@@ -111,7 +108,6 @@ ax1.plot(save_py[:,0], save_py[:,1], marker='o', markersize=3, label='Python')
 ax1.plot(save_c[:,0], save_c[:,1], marker='o', markersize=3, label='C')
 ax1.set_ylabel('Time [s]')
 ax1.set_xlabel('Input value')
-ax1.set_xscale('log')
 ax1.grid()
 
 plt.legend()
@@ -132,7 +128,6 @@ ax1.plot(read_py[:,0], read_py[:,1], marker='o', markersize=3, label='Python')
 ax1.plot(read_c[:,0], read_c[:,1], marker='o', markersize=3, label='C')
 ax1.set_ylabel('Time [s]')
 ax1.set_xlabel('Input file size [B]')
-ax1.set_xscale('log')
 ax1.grid()
 
 plt.legend()
@@ -156,7 +151,6 @@ ax1.plot(save_py[:,0], save_py[:,1], marker='o', markersize=3, color='tab:orange
 ax1.plot(save_c[:,0], save_c[:,1], marker='x', markersize=3, color='tab:orange', linestyle=':', label='Save, C')
 ax1.set_ylabel('Time [s]')
 ax1.set_xlabel('Input value')
-ax1.set_xscale('log')
 ax1.grid()
 
 # Plot the read results on a different x-axis, same y-axis
@@ -164,7 +158,6 @@ ax2 = ax1.twiny()
 ax2.plot(read_py[:,0], read_py[:,1], marker='o', markersize=3, color='tab:green', label='Read, Python')
 ax2.plot(read_c[:,0], read_c[:,1], marker='x', markersize=3, color='tab:green', linestyle=':', label='Read, C')
 ax2.set_xlabel('Input file size [B]', color='tab:green')
-ax2.set_xscale('log')
 ax2.tick_params('x', colors='tab:green')
 
 # Sort out the legend
