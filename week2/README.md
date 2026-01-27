@@ -37,6 +37,8 @@ File structure for running the bash files:
 	- ```HPQC/```
 		- ```week2/```
 
+I would also recommend running the ```.sh``` files in ```tmux``` as they can take a while to run.
+
 When running ```plotting.py``` all data files must be present or an error will occur.
 
 
@@ -83,3 +85,6 @@ The plots are shown below, grouped by language and by task. There are also plots
 ![Comparison of the performace of each language for each task on log-log scale](./images/all_plot_log.png)
 
 ## Analysis of results
+
+Apart from three 
+
