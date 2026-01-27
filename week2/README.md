@@ -34,13 +34,12 @@ File structure for running the bash files:
 - ```directory_in_which_they_are_run/```
 	- ```data/```
 	- ```bin/```
-	- ```HPQC/```
-		- ```week2/```
+
+On the servers I have ```data/``` and ```bin/``` folders in this directory but they are ignored by a ```.gitignore``` file.
 
 I would also recommend running the ```.sh``` files in ```tmux``` as they can take a while to run.
 
 When running ```plotting.py``` all data files must be present or an error will occur.
-
 
 ## Results
 
