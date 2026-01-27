@@ -86,5 +86,10 @@ The plots are shown below, grouped by language and by task. There are also plots
 
 ## Analysis of results
 
-Apart from three 
+For printing and writing to a file, at high input values (above about $10^3$) the C program is faster than python except for a few random datapoints where the C code takes longer. If I get the chance I will re-run the files and see if I can get a dataset where this is not present as I expect these are random and hopefully will not be replicated.
 
+For each language after an input of about $10^4$ the printing time is higher than the time to write and save to a file. This is likely because there is some constant time required to create, open and save a file, while the time taken to append to a file is lower than the time to print to the console. It appears that the constant time is similar between python and C, while the time to append to a file is faster in C than it is python.
+
+For each language the time to read the file remains fairly constant for all file sizes and is similar for python and C.
+
+It appears that C has some constant startup time to print, and after this the time taken increases linearly. While python also likely has some constant startup time it appears to be much lower and it begins to increase linearly much sooner than C does.
