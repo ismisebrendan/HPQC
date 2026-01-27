@@ -33,7 +33,8 @@ File structure for running the python or C files in isolation:
 File structure for running the bash files:
 - ```directory_in_which_they_are_run/```
 	- ```data/```
-	- ```bin/```
+	- ```bin/compiled_c_files```
+ 	- ```python_files```
 
 On the servers I have ```data/``` and ```bin/``` folders in this directory but they are ignored by a ```.gitignore``` file.
 
