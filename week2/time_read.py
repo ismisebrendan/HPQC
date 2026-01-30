@@ -24,7 +24,7 @@ def main():
     print("\n\nTime to read file: {} seconds\n".format(run_time))
 
     # Get the size of the file read in
-g   file_size = os.path.getsize("./data/python_time_out.txt")
+    file_size = os.path.getsize("./data/python_time_out.txt")
 
     # Save the input number and run time to a file for analysis of data
     f = open("./data/python_time_read_results.txt", "a")
