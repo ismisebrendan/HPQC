@@ -146,7 +146,8 @@ struct timespec calculate_runtime(struct timespec start_time, struct timespec en
 {
 	// creates and initialises the variables
 	struct timespec time_diff;
-	long int seconds, nanoseconds;                                                                                                       seconds = nanoseconds = 0;
+	long int seconds, nanoseconds;
+	seconds = nanoseconds = 0;
 	double runtime = 0.0;
 
 	// extracts the elements from start_time and end_time
