@@ -147,4 +147,3 @@ This essentially finds the (np-1)th triangular number, where np is the number of
 
 ## Timing vector_serial_edited.c
 ```vector_serial.c``` was edited to instead set element i of the vector to $i^2$ rather than just 0.
->>>>>>> a2c59a7701a2836b80b98d03852a3bc3d24f5355
