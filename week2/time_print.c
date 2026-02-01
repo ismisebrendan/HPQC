@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 		printf("%d, ", i);
 	}
 	// gets the time after the loop
-        timespec_get(&end_time, TIME_UTC);
+    timespec_get(&end_time, TIME_UTC);
 
 	// calculates the runtime
 	time_diff = calculate_runtime(start_time, end_time);
