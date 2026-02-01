@@ -8,6 +8,10 @@
  - ```timing_results.txt``` - The results from timing the different files. (Results also shown below).
  - ```proof.c``` - The ```proof.c``` file copied from the course repository
  - ```vector_serial.c``` - The ```vector_serial.c``` file copied from the course repository
+ - ```vector_serial_edited.c``` - The ```vector_serial.c``` file edited so that it sets the ith component of the vector to $i^2$.
+ - ```vector_serial_internal.c``` - The ```vector_serial_edited.c``` file edited so that it outputs the time taken to run the program, as found internally.
+ - ```run_external.sh``` - Runs ```vector_serial_edited.c``` repeatedly for a number of different inputs in order to find the time taken to run for a number of different inputs.
+ - ```run_internal.sh``` - Runs ```vector_serial_internal.c``` repeatedly for a number of different inputs in order to find the time taken to run for a number of different inputs.
 
 ## Timing Results
 
@@ -142,8 +146,7 @@ This essentially finds the (np-1)th triangular number, where np is the number of
       - Raise an error.
       - Give an example of the correct usage.
       - Close the program.
-<<<<<<< HEAD
-=======
+
 
 ## Timing vector_serial_edited.c
 ```vector_serial.c``` was edited to instead set element i of the vector to $i^2$ rather than just 0.
