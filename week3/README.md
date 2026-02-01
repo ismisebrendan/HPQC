@@ -7,3 +7,60 @@
  - ```hello_world.c``` - Hello world in serial.
 
  - ```timing_results.txt``` - The results from timing the different files. (Results also shown below).
+
+ - ```proof.c``` - The ```proof.c``` file copied from the course repository
+
+## Documentation of proof.c
+
+```main()```:
+ - Declares and initialises some variables.
+ - Use ```check_args()``` to check that the correct form of input was provided and then convert it to an integer.
+ - Initialises the MPI process.
+ - Finds the rank of the current process and the size of the universe (MPI world size).
+ - Calls ```check_uni_size()``` with the size of the universe as an input to check the size of the universe is ok for the program to run.
+ - Calls ```check_task()``` to find out what it's supposed to do based off of the universe size, its rank and the input value.
+ - Finalises the MPI.
+
+```check_args()```:
+ - Declares the numerical argument variable (the input), sets it to 0 initially.
+ - Checks that the correct number of arguments [program_name, numerical_argument] have been passed in.
+ - If so:
+    - Convert the second argument (the input value) to an integer.
+ - Else:
+    - Raise an error.
+    - Give an example of the correct usage.
+    - Close the program.
+
+```check_uni_size()```:
+ - Sets the minimum size of the universe to 1 process.
+ - Check if the size of the universe is >= to the minimum size.
+ - If so:
+    - Exit this funtion, return to where it was called.
+ - Else:
+    - Raise an error.
+    - Print the minimum universe size.
+    - Print the size that was input.
+    - Close the program.
+
+```check_task()```:
+ - Check the rank of the process.
+ - If root process (rank == 0):
+    - Call ```root_task()``` with the size of the universe as an input.
+ - Else:
+    - Call ```client_task()``` with the rank of the process and the input value.
+
+```root_task()```:
+ - Declare and initialise the variables dealing with transmission.
+ - Sets the count to 1.
+ - Initialise the variable for the final output to 0.
+ - Iterate through all other ranks.
+    - Receive the message from the specific rank.
+    - Add the received message to the output.
+ - Print the combined output sum and return it
+
+```client_task()```:
+ - Declare and initialise the variables dealing with transmission.
+ - Sets the count to 1.
+ - Set the message destination to 0 (the root).
+ - Create the message, which is rank * input_value.
+ - Send the message to the root.
