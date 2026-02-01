@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	// Save the runtime and input number to an output file
 	data_file = fopen("./data/internal_timing.txt", "a");
 	// File format: number of iterations, run time
-	fprintf(data_file, "%d, %lf \n", input, runtime);
+	fprintf(data_file, "%d, %lf \n", num_arg, runtime);
 	fclose(data_file);
 
 	return 0;
