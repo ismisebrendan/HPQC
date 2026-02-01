@@ -65,16 +65,16 @@ The parallel program is significantly slower than the serial counterpart, althou
  - Import libraries.
  - Declare the functions.
  - ```main()```:
-   - Declares and initialises some variables.
+   - Declare and initialise some variables.
    - Use ```check_args()``` to check that the correct form of input was provided and then convert it to an integer.
-   - Initialises the MPI process.
-   - Finds the rank of the current process and the size of the universe (MPI world size).
-   - Calls ```check_uni_size()``` with the size of the universe as an input to check the size of the universe is ok for the program to run.
-   - Calls ```check_task()``` to find out what it's supposed and then do it, to do based off of the universe size, its rank and the input value.
-   - Finalises the MPI.
+   - Initialise the MPI process.
+   - Find the rank of the current process and the size of the universe (MPI world size).
+   - Call ```check_uni_size()``` with the size of the universe as an input to check the size of the universe is ok for the program to run.
+   - Call ```check_task()``` to find out what it's supposed and then do it, to do based off of the universe size, its rank and the input value.
+   - Finalise the MPI.
  - ```check_args()```:
-   - Declares the numerical argument variable (the input), sets it to 0 initially.
-   - Checks that the correct number of arguments [program_name, numerical_argument] have been passed in.
+   - Declare the numerical argument variable (the input), sets it to 0 initially.
+   - Check that the correct number of arguments [program_name, numerical_argument] have been passed in.
    - If so:
       - Convert the second argument (the input value) to an integer.
    - Else:
@@ -82,7 +82,7 @@ The parallel program is significantly slower than the serial counterpart, althou
       - Give an example of the correct usage.
       - Close the program.
  - ```check_uni_size()```:
-   - Sets the minimum size of the universe to 1 process.
+   - Set the minimum size of the universe to 1 process.
    - Check if the size of the universe is >= to the minimum size.
    - If so:
       - Exit this funtion, return to where it was called.
@@ -99,7 +99,7 @@ The parallel program is significantly slower than the serial counterpart, althou
       - Call ```client_task()``` with the rank of the process and the input value.
  - ```root_task()```:
    - Declare and initialise the variables dealing with transmission.
-   - Sets the count to 1.
+   - Set the count to 1.
    - Initialise the variable for the final output to 0.
    - Iterate through all other ranks.
       - Receive the message from the specific rank.
@@ -107,9 +107,39 @@ The parallel program is significantly slower than the serial counterpart, althou
    - Print the combined output sum and return it
  - ```client_task()```:
    - Declare and initialise the variables dealing with transmission.
-   - Sets the count to 1.
+   - Set the count to 1.
    - Set the message destination to 0 (the root).
    - Create the message, which is rank * input_value.
    - Send the message to the root.
 
 This essentially finds the (np-1)th triangular number, where np is the number of processes used, and multiplites it by whatever input (m) is provided. As such, a single-line expression for the output is $m \frac{np(np-1)}{2}$.
+
+## Documentation of vector_serial.c
+ - Import libraries.
+ - Declare the functions.
+ - ```main()```:
+   - Use ```check_args()``` to check that the correct form of input was provided and then convert it to an integer.
+   - Initialise the vector variable using ```malloc```.
+   - Call ```initialise_vector()``` with the initialised vector, the input value (as the size of the vector) and 0 as inputs.
+   - Call ```sum_vector()``` to find the sum of the vector, taking the vector and the input value.
+   - Print what was found by ```sum_vector()```.
+ - ```sum_vector()```:
+   - Take in a vector and size.
+   - Create the variable to store the sum.
+   - Loop through the elements of the vector and add them to the sum.
+   - Return the sum.
+ - ```initialise_vector()```:
+   - Take in a vector, the size of the vector and some initial value as inputs.
+   - Loop through all elements of the vector and set each to the initial value.
+ - ```print_vector()```:
+   - Take in a vector and size.
+   - Loop through each element of the vector and print each value to the console separately.
+ - ```check_args()```:
+   - Declare the numerical argument variable (the input), sets it to 0 initially.
+   - Check that the correct number of arguments [program_name, numerical_argument] have been passed in.
+   - If so:
+      - Convert the second argument (the input value) to an integer.
+   - Else:
+      - Raise an error.
+      - Give an example of the correct usage.
+      - Close the program.
