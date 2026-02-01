@@ -23,7 +23,7 @@ int main(int argc, char **argv)
 	else //(argc != 2)
 	{
 		// raises an error
-		fprintf(stderr, "Incorrect arguments.  Usage: time_print [NUM]\ne.g. \n time_print 3\n");
+		fprintf(stderr, "Incorrect arguments.  Usage: time_save [NUM]\ne.g. \n time_save 3\n");
 		// and crashes out
 		exit(-1);
 	}
