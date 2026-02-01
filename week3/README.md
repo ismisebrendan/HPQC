@@ -12,6 +12,8 @@
 
 ## Timing Results
 
+Note: These were run once for each number of processors, this is by no means rigorous, just to get a bit of an idea.
+
 For the parallel program, ```hello_world_mpi.c```
 
 (All times in seconds)
@@ -55,6 +57,8 @@ For the serial program, ```hello_world.c```
 | 14    | 0.004 | 0.000 | 0.004 |
 | 15    | 0.004 | 0.000 | 0.004 |
 | 16    | 0.004 | 0.000 | 0.004 |
+
+The parallel program is significantly slower than the serial counterpart, although of course the serial program doesn't have the additional overhead of creating a number of parallel processes. Also, the serial program has a consistent time for any input tested, while the serial program does tend to take longer as more processors are added. Notably the sum of usr and sys exceeds the real time for the parallel program for larger numbers of processors, while in the serial case the real time never exceeds this sum, and is usally equal to it.
 
 ## Documentation of proof.c
 
