@@ -68,7 +68,7 @@ The parallel program is significantly slower than the serial counterpart, althou
  - Initialises the MPI process.
  - Finds the rank of the current process and the size of the universe (MPI world size).
  - Calls ```check_uni_size()``` with the size of the universe as an input to check the size of the universe is ok for the program to run.
- - Calls ```check_task()``` to find out what it's supposed to do based off of the universe size, its rank and the input value.
+ - Calls ```check_task()``` to find out what it's supposed and then do it, to do based off of the universe size, its rank and the input value.
  - Finalises the MPI.
 
 ```check_args()```:
@@ -114,3 +114,5 @@ The parallel program is significantly slower than the serial counterpart, althou
  - Set the message destination to 0 (the root).
  - Create the message, which is rank * input_value.
  - Send the message to the root.
+
+This essentially finds the (np-1)th triangular number, where np is the number of processes used, and multiplites it by whatever input (m) is provided. As such, a single-line expression for the output is $m \frac{np(np-1)}{2}$.
