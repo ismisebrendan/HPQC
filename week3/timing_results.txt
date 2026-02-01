@@ -1,5 +1,7 @@
 The results from timing hello_world_mpi for 1 to 16 processors.
+
 Only run once for each number of processors, not rigorous, just to get a bit of an idea.
+
 All times in seconds
 
 np      real        usr         sys
@@ -19,3 +21,26 @@ np      real        usr         sys
 14      0.476       0.388       0.396
 15      0.470       0.350       0.464
 16      0.475       0.339       0.527
+
+The results from timing hello_world for 1 to 16.
+
+Only run once for each input, not rigorous, just to get a bit of an idea.
+
+All times in seconds
+input   real        usr         sys
+1       0.005       0.004       0.000
+2       0.004       0.000       0.004
+3       0.004       0.000       0.004
+4       0.004       0.000       0.004
+5       0.004       0.000       0.004
+6       0.004       0.000       0.004
+7       0.004       0.000       0.004
+8       0.004       0.000       0.004
+9       0.004       0.000       0.004
+10      0.004       0.000       0.004
+11      0.004       0.000       0.004
+12      0.004       0.000       0.004
+13      0.004       0.003       0.000
+14      0.004       0.000       0.004
+15      0.004       0.000       0.004
+16      0.004       0.000       0.004
