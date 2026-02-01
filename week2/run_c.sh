@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Run the python files repeatedly with different numbers input
+# Run the C files repeatedly with different numbers input
 
 # Test for values from 1 to 1e9
 for j in {0..8}; do
