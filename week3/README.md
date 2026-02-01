@@ -143,3 +143,6 @@ This essentially finds the (np-1)th triangular number, where np is the number of
       - Raise an error.
       - Give an example of the correct usage.
       - Close the program.
+
+## Timing vector_serial_edited.c
+```vector_serial.c``` was edited to instead set element i of the vector to $i^2$ rather than just 0.
