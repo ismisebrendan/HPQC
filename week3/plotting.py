@@ -25,7 +25,7 @@ plt.close()
 external = np.genfromtxt('./data/external_timing.txt', delimiter=',', usecols=[0])
 external = np.reshape(external, (int(len(external)/2), 2))
 
-plt.plot(external[:,0], external[:,1], marker='o', markersize=3, label='Internal')
+plt.plot(external[:,0], external[:,1], marker='o', markersize=3, label='External')
 plt.grid()
 plt.legend(loc='upper left')
 
@@ -37,4 +37,20 @@ plt.yscale('log')
 plt.xscale('log')
 plt.tight_layout()
 plt.savefig('./data/external_plot_log.png')
+plt.close()
+
+# Plot them together
+plt.plot(external[:,0], external[:,1], marker='o', markersize=3, label='External')
+plt.plot(internal[:,0], internal[:,1], marker='o', markersize=3, label='Internal')
+plt.grid()
+plt.legend(loc='upper left')
+
+plt.title('Time recorded')
+plt.tight_layout()
+plt.savefig('./data/serial_plot.png')
+# Plot with logarithmic axes
+plt.yscale('log')
+plt.xscale('log')
+plt.tight_layout()
+plt.savefig('./data/serial_plot_log.png')
 plt.close()
