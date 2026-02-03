@@ -33,9 +33,6 @@ int main(int argc, char **argv)
 	// and initialises every element
 	initialise_vector(my_vector, num_arg, 0);
 
-	// print the vector
-	print_vector(my_vector, num_arg);
-
 	// sums the vector
 	int my_sum = sum_vector(my_vector, num_arg);
 

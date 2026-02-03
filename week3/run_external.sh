@@ -10,6 +10,7 @@ for j in {0..8}; do
 	for i in {1..9}; do
 		a=$(($i*10**$j))
 		echo "$a" >> data/external_timing.txt
+		# Call the time function, output to a file and append to it. Save the data with the format: Real, usr, sys. Call the c funtion with $a as its input
 		\time -o data/external_timing.txt --append -f "%e, %U, %S" ./bin/vector_serial_edited $a
 	done
 done
