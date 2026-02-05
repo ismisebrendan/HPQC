@@ -51,49 +51,61 @@ The plots are shown below, grouped by language and by task. There are also plots
 ### Python plots
 
 ![Performace of python programs on linear scale](./images/python_plot.png)
+
 Performace of python programs on linear scale
 
 ![Performace of python programs on log-log scale](./images/python_plot_log.png)
+
 Performace of python programs on log-log scale
 
 ### C plots
 
 ![Performace of C programs on linear scale](./images/c_plot.png)
+
 Performace of C programs on linear scale
 
 ![Performace of C programs on log-log scale](./images/c_plot_log.png)
+
 Performace of C programs on log-log scale
 
 ### Printing plots
 
 ![Comparison of the performace of each language when printing the numbers on linear scale](./images/print_plot.png)
+
 Comparison of the performace of each language when printing the numbers on linear scale
 
 ![Comparison of the performace of each language when printing the numbers on log-log scale](./images/print_plot_log.png)
+
 Comparison of the performace of each language when printing the numbers on log-log scale
 
 ### Writing plots
 
 ![Comparison of the performace of each language when writing the numbers to a file on linear scale](./images/save_plot.png)
+
 Comparison of the performace of each language when writing the numbers to a file on linear scale
 
 ![Comparison of the performace of each language when writing the numbers to a file on log-log scale](./images/save_plot_log.png)
+
 Comparison of the performace of each language when writing the numbers to a file on log-log scale
 
 ### Reading plots
 
 ![Comparison of the performace of each language when reading a file on linear scale](./images/read_plot.png)
+
 Comparison of the performace of each language when reading a file on linear scale
 
 ![Comparison of the performace of each language when reading a file on log-log scale](./images/read_plot_log.png)
+
 Comparison of the performace of each language when reading a file on log-log scale
 
 ### Plots of all processes
 
 ![Comparison of the performace of each language for each task on linear scale](./images/all_plot.png)
+
 Comparison of the performace of each language for each task on linear scale
 
 ![Comparison of the performace of each language for each task on log-log scale](./images/all_plot_log.png)
+
 Comparison of the performace of each language for each task on log-log scale
 
 ## Analysis of results
