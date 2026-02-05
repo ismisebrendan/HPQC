@@ -190,3 +190,274 @@ The time recorded internally and exteranlly on a log-log scale.
 
 ## Comparison of serial and parallel computation
 The time taken to sum the first 1860 square numbers, in steps of 10, was found for the serial case and for the parallel case with all numbers of processors from 2 to 16. 1860 was chosen as this was the last value before which integer overflows occur when performing the sum. It was intedned to benchmark them both internally and externally, however for the external timing the only way to print to a file is using ```\time```, a differnet command to ```time```. This command does not have the required precision to measure the time required for the serial file to sum the vector (it records the time as 0.00 s for all values tested), as such, only the internal timings will be considered here. Anyway, the internal timing is more interesting, as we can avoid the overhead of creating the different processes if desired. As such we will find the time purely for summing the vector and the time including all overhead as well.
+
+The plots are all visible below. (They are all very similar, however they have been included for the sake of completeness).
+
+In all cases the serial process is faster than the parallel process.
+
+Looking at the data not including the overhead, the serial process appears to be increasing in runtime faster than the parallel processes, so at some point for a larger vector the parallel process should perform better than the serial process (although, with this exact vector it would lead to an overflow in the value of the sum). Also for increasing numbers of processors the parallel process appears to take longer. This is likely due to the root having to wait longer to sum the values coming from the increasing number of other processes.
+
+In these cases the time taken for the parallel process varies as the number of tasks increases, although it appears to be oscillating around a mean time. This appears to be random, and running the code again, the same variability is seen, for different exact values.
+
+In the case where the overhead is included, the parallel process takes significantly longer than the serial process. This shows that for a simple process such as this the overhead required to run the parallel process is not worth it.
+
+In these cases the time taken for the parallel process varies between approximately 0.25 and 1.75 s as the number of tasks increases. This is seen no matter the number of processes used. This suggests some internal variability in how long the overhead takes to run (as this is significantly longer than the times seen in the case where overhead was not measured and so the time taken to sum the values is relatively insignificant).
+
+This appears to be random, and running the code again, the same variability is seen, for different exact values.
+
+There are also two random points in the non-overhead case, one each for 9 processors and 16 processors, which take significantly longer than the other vectors to compute the sum, but this is again a random result and not replicated when running the code again.
+
+### Plots
+
+#### No overhead
+
+![The time recorded for 2 processors on a linear scale](./images/internal_plot_2_processors.png)
+
+The time recorded for 2 processors on a linear scale.
+
+![The time recorded for 2 processors on a log scale](./images/internal_plot_2_processors_log.png)
+
+The time recorded for 2 processors on a log scale.
+
+![The time recorded for 3 processors on a linear scale](./images/internal_plot_3_processors.png)
+
+The time recorded for 3 processors on a linear scale.
+
+![The time recorded for 3 processors on a log scale](./images/internal_plot_3_processors_log.png)
+
+The time recorded for 3 processors on a log scale.
+
+![The time recorded for 4 processors on a linear scale](./images/internal_plot_4_processors.png)
+
+The time recorded for 4 processors on a linear scale.
+
+![The time recorded for 4 processors on a log scale](./images/internal_plot_4_processors_log.png)
+
+The time recorded for 4 processors on a log scale.
+
+![The time recorded for 5 processors on a linear scale](./images/internal_plot_5_processors.png)
+
+The time recorded for 5 processors on a linear scale.
+
+![The time recorded for 5 processors on a log scale](./images/internal_plot_5_processors_log.png)
+
+The time recorded for 5 processors on a log scale.
+
+![The time recorded for 6 processors on a linear scale](./images/internal_plot_6_processors.png)
+
+The time recorded for 6 processors on a linear scale.
+
+![The time recorded for 6 processors on a log scale](./images/internal_plot_6_processors_log.png)
+
+The time recorded for 6 processors on a log scale.
+
+![The time recorded for 7 processors on a linear scale](./images/internal_plot_7_processors.png)
+
+The time recorded for 7 processors on a linear scale.
+
+![The time recorded for 7 processors on a log scale](./images/internal_plot_7_processors_log.png)
+
+The time recorded for 7 processors on a log scale.
+
+![The time recorded for 8 processors on a linear scale](./images/internal_plot_8_processors.png)
+
+The time recorded for 8 processors on a linear scale.
+
+![The time recorded for 8 processors on a log scale](./images/internal_plot_8_processors_log.png)
+
+The time recorded for 8 processors on a log scale.
+
+![The time recorded for 9 processors on a linear scale](./images/internal_plot_9_processors.png)
+
+The time recorded for 9 processors on a linear scale.
+
+![The time recorded for 9 processors on a log scale](./images/internal_plot_9_processors_log.png)
+
+The time recorded for 9 processors on a log scale.
+
+![The time recorded for 10 processors on a linear scale](./images/internal_plot_10_processors.png)
+
+The time recorded for 10 processors on a linear scale.
+
+![The time recorded for 10 processors on a log scale](./images/internal_plot_10_processors_log.png)
+
+The time recorded for 10 processors on a log scale.
+
+![The time recorded for 11 processors on a linear scale](./images/internal_plot_11_processors.png)
+
+The time recorded for 11 processors on a linear scale.
+
+![The time recorded for 11 processors on a log scale](./images/internal_plot_11_processors_log.png)
+
+The time recorded for 11 processors on a log scale.
+
+![The time recorded for 12 processors on a linear scale](./images/internal_plot_12_processors.png)
+
+The time recorded for 12 processors on a linear scale.
+
+![The time recorded for 12 processors on a log scale](./images/internal_plot_12_processors_log.png)
+
+The time recorded for 12 processors on a log scale.
+
+![The time recorded for 13 processors on a linear scale](./images/internal_plot_13_processors.png)
+
+The time recorded for 13 processors on a linear scale.
+
+![The time recorded for 13 processors on a log scale](./images/internal_plot_13_processors_log.png)
+
+The time recorded for 13 processors on a log scale.
+
+![The time recorded for 14 processors on a linear scale](./images/internal_plot_14_processors.png)
+
+The time recorded for 14 processors on a linear scale.
+
+![The time recorded for 14 processors on a log scale](./images/internal_plot_14_processors_log.png)
+
+The time recorded for 14 processors on a log scale.
+
+![The time recorded for 15 processors on a linear scale](./images/internal_plot_15_processors.png)
+
+The time recorded for 15 processors on a linear scale.
+
+![The time recorded for 15 processors on a log scale](./images/internal_plot_15_processors_log.png)
+
+The time recorded for 15 processors on a log scale.
+
+![The time recorded for 16 processors on a linear scale](./images/internal_plot_16_processors.png)
+
+The time recorded for 16 processors on a linear scale.
+
+![The time recorded for 16 processors on a log scale](./images/internal_plot_16_processors_log.png)
+
+The time recorded for 16 processors on a log scale.
+
+#### Overhead
+
+
+![The time recorded for the process with the overhead included on a linear scale](./images/internal_plot_serial_overhead.png)
+
+The time recorded for the process with the overhead included on a linear scale
+
+![The time recorded for the process with the overhead included on a log scale](./images/internal_plot_serial_overhead_log.png)
+
+The time recorded for the process with the overhead included on a log scale
+
+![The time recorded for 2 processors with the overhead included on a linear scale](./images/internal_plot_2_processors_overhead.png)
+
+The time recorded for 2 processors with the overhead included on a linear scale.
+
+![The time recorded for 2 processors with the overhead included on a log scale](./images/internal_plot_2_processors_overhead_log.png)
+
+The time recorded for 2 processors with the overhead included on a log scale.
+
+![The time recorded for 3 processors with the overhead included on a linear scale](./images/internal_plot_3_processors_overhead.png)
+
+The time recorded for 3 processors with the overhead included on a linear scale.
+
+![The time recorded for 3 processors with the overhead included on a log scale](./images/internal_plot_3_processors_overhead_log.png)
+
+The time recorded for 3 processors with the overhead included on a log scale.
+
+![The time recorded for 4 processors with the overhead included on a linear scale](./images/internal_plot_4_processors_overhead.png)
+
+The time recorded for 4 processors with the overhead included on a linear scale.
+
+![The time recorded for 4 processors with the overhead included on a log scale](./images/internal_plot_4_processors_overhead_log.png)
+
+The time recorded for 4 processors with the overhead included on a log scale.
+
+![The time recorded for 5 processors with the overhead included on a linear scale](./images/internal_plot_5_processors_overhead.png)
+
+The time recorded for 5 processors with the overhead included on a linear scale.
+
+![The time recorded for 5 processors with the overhead included on a log scale](./images/internal_plot_5_processors_overhead_log.png)
+
+The time recorded for 5 processors with the overhead included on a log scale.
+
+![The time recorded for 6 processors with the overhead included on a linear scale](./images/internal_plot_6_processors_overhead.png)
+
+The time recorded for 6 processors with the overhead included on a linear scale.
+
+![The time recorded for 6 processors with the overhead included on a log scale](./images/internal_plot_6_processors_overhead_log.png)
+
+The time recorded for 6 processors with the overhead included on a log scale.
+
+![The time recorded for 7 processors with the overhead included on a linear scale](./images/internal_plot_7_processors_overhead.png)
+
+The time recorded for 7 processors with the overhead included on a linear scale.
+
+![The time recorded for 7 processors with the overhead included on a log scale](./images/internal_plot_7_processors_overhead_log.png)
+
+The time recorded for 7 processors with the overhead included on a log scale.
+
+![The time recorded for 8 processors with the overhead included on a linear scale](./images/internal_plot_8_processors_overhead.png)
+
+The time recorded for 8 processors with the overhead included on a linear scale.
+
+![The time recorded for 8 processors with the overhead included on a log scale](./images/internal_plot_8_processors_overhead_log.png)
+
+The time recorded for 8 processors with the overhead included on a log scale.
+
+![The time recorded for 9 processors with the overhead included on a linear scale](./images/internal_plot_9_processors_overhead.png)
+
+The time recorded for 9 processors with the overhead included on a linear scale.
+
+![The time recorded for 9 processors with the overhead included on a log scale](./images/internal_plot_9_processors_overhead_log.png)
+
+The time recorded for 9 processors with the overhead included on a log scale.
+
+![The time recorded for 10 processors with the overhead included on a linear scale](./images/internal_plot_10_processors_overhead.png)
+
+The time recorded for 10 processors with the overhead included on a linear scale.
+
+![The time recorded for 10 processors with the overhead included on a log scale](./images/internal_plot_10_processors_overhead_log.png)
+
+The time recorded for 10 processors with the overhead included on a log scale.
+
+![The time recorded for 11 processors with the overhead included on a linear scale](./images/internal_plot_11_processors_overhead.png)
+
+The time recorded for 11 processors with the overhead included on a linear scale.
+
+![The time recorded for 11 processors with the overhead included on a log scale](./images/internal_plot_11_processors_overhead_log.png)
+
+The time recorded for 11 processors with the overhead included on a log scale.
+
+![The time recorded for 12 processors with the overhead included on a linear scale](./images/internal_plot_12_processors_overhead.png)
+
+The time recorded for 12 processors with the overhead included on a linear scale.
+
+![The time recorded for 12 processors with the overhead included on a log scale](./images/internal_plot_12_processors_overhead_log.png)
+
+The time recorded for 12 processors with the overhead included on a log scale.
+
+![The time recorded for 13 processors with the overhead included on a linear scale](./images/internal_plot_13_processors_overhead.png)
+
+The time recorded for 13 processors with the overhead included on a linear scale.
+
+![The time recorded for 13 processors with the overhead included on a log scale](./images/internal_plot_13_processors_overhead_log.png)
+
+The time recorded for 13 processors with the overhead included on a log scale.
+
+![The time recorded for 14 processors with the overhead included on a linear scale](./images/internal_plot_14_processors_overhead.png)
+
+The time recorded for 14 processors with the overhead included on a linear scale.
+
+![The time recorded for 14 processors with the overhead included on a log scale](./images/internal_plot_14_processors_overhead_log.png)
+
+The time recorded for 14 processors with the overhead included on a log scale.
+
+![The time recorded for 15 processors with the overhead included on a linear scale](./images/internal_plot_15_processors_overhead.png)
+
+The time recorded for 15 processors with the overhead included on a linear scale.
+
+![The time recorded for 15 processors with the overhead included on a log scale](./images/internal_plot_15_processors_overhead_log.png)
+
+The time recorded for 15 processors with the overhead included on a log scale.
+
+![The time recorded for 16 processors with the overhead included on a linear scale](./images/internal_plot_16_processors_overhead.png)
+
+The time recorded for 16 processors with the overhead included on a linear scale.
+
+![The time recorded for 16 processors with the overhead included on a log scale](./images/internal_plot_16_processors_overhead_log.png)
+
+The time recorded for 16 processors with the overhead included on a log scale.
