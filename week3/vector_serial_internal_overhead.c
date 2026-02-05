@@ -51,7 +51,7 @@ int main(int argc, char **argv)
 	runtime = to_second_float(time_diff);
 
 	// Save the runtime and input number to an output file
-	data_file = fopen("./data/serial_timing_internal.txt", "a");
+	data_file = fopen("./data/serial_timing_internal_overhead.txt", "a");
 	// File format: number of iterations, run time
 	fprintf(data_file, "%d, %lf \n", num_arg, runtime);
 	fclose(data_file);
