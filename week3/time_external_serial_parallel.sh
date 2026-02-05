@@ -13,7 +13,9 @@ done
 
 # Parallel case
 for j in {2..16}; do
+	echo "$j" >> data/parallel_external_timing.txt
 	for i in {10..1861..10}; do
+		echo "$i" >> data/parallel_external_timing.txt
 		\time -o data/parallel_external_timing.txt --append -f "%e, %U, %S" mpirun -np $j ./bin/vector_parallel $i
 	done
 done
