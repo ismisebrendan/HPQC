@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <mpi.h>
 
 // declares the functions that will be called within main
 // note how declaration lines are similar to the initial line
@@ -7,7 +8,8 @@
 int check_args(int argc, char **argv);
 void initialise_vector(int vector[], int size, int initial);
 void print_vector(int vector[], int size);
-int sum_vector(int vector[], int size);
+int sum_vector_p(int vector[], int size, int my_rank, int uni_size);
+void check_uni_size(int uni_size);
 
 int main(int argc, char **argv)
 {
@@ -38,7 +40,7 @@ int main(int argc, char **argv)
 	initialise_vector(my_vector, num_arg, 0);
 
 	// find the sum in parallel
-	sum_vector_p(my_vector, my_rank, uni_size);
+	sum_vector_p(my_vector, num_arg, my_rank, uni_size);
 
 	// finalise MPI
 	ierror = MPI_Finalize();
@@ -50,23 +52,27 @@ int main(int argc, char **argv)
 }
 
 // sum the vector in parallel
-int sum_vector_p(int vector[], int my_rank, int uni_size)
+int sum_vector_p(int vector[], int size, int my_rank, int uni_size)
 {
 	// store the partial sum
 	int partial_sum = 0;
+
+	// initialise stop
+	int stop;
+
 	// break up the vector
-	int chunk = sizeof(vector) / uni_size;
+	int chunk = size / uni_size;
 
 	int start = my_rank * chunk;
 
 	// if this is the last process take all elements at the end as well
 	if (uni_size - 1 == my_rank)
 	{
-		int stop = sizeof(vector);
+		stop = size;
 	}
 	else // otherwise take up to the start of the next chunk
 	{
-		int stop = (my_rank + 1) * chunk;
+		stop = (my_rank + 1) * chunk;
 	}
 
 	// sum this specific chunk
@@ -91,7 +97,7 @@ int sum_vector_p(int vector[], int my_rank, int uni_size)
 		int recv_message, count, source, tag;
 		recv_message = source = tag = 0;
 		count = 1;
-		MPI_Status status
+		MPI_Status status;
 
 		// the final sum, starting with what was calculated here
 		int total_sum = partial_sum;
@@ -102,12 +108,12 @@ int sum_vector_p(int vector[], int my_rank, int uni_size)
 			// receive the message
 			MPI_Recv(&recv_message, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
 			// add this to the running total
-			total_sum += recv_message
+			total_sum += recv_message;
 		}
 
 		// output and return
 		printf("Sum: %d\n", total_sum);
-		return total_sum
+		return total_sum;
 	}
 }
 
@@ -157,6 +163,7 @@ int check_args(int argc, char **argv)
 	return num_arg;
 }
 
+// ensure the universe size is ok
 void check_uni_size(int uni_size)
 {
 	// sets the minimum universe size
