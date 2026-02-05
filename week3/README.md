@@ -150,3 +150,6 @@ This essentially finds the (np-1)th triangular number, where np is the number of
 
 ## Timing vector_serial_edited.c
 ```vector_serial.c``` was edited to instead set element i of the vector to (initial value + i)^2 rather than just intial value. The initial value was left at 0. This does lead to overflows for large arrays.
+
+## Comparison of serial and parallel computation
+The time taken to sum the first 1860 square numbers, in steps of 10, was found for the serial case and for the parallel case with all numbers of processors from 2 to 16. 1860 was chosen as this was the last value before which integer overflows occur when performing the sum. They were benchmarked internally and externally.
