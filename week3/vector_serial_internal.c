@@ -21,11 +21,11 @@ int main(int argc, char **argv)
 	double runtime = 0.0;
 	FILE *data_file;
 
+	// Get the time before starting
+	timespec_get(&start_time, TIME_UTC);
+	
 	// declare and initialise the numerical argument variable
 	int num_arg = check_args(argc, argv);
-
-	// Get the time before creating the vector
-	timespec_get(&start_time, TIME_UTC);
 
 	// creates a vector variable
 	// int my_vector[num_arg]; // suffers issues for large vectors
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
 	runtime = to_second_float(time_diff);
 
 	// Save the runtime and input number to an output file
-	data_file = fopen("./data/internal_timing.txt", "a");
+	data_file = fopen("./data/serial_timing_internal.txt", "a");
 	// File format: number of iterations, run time
 	fprintf(data_file, "%d, %lf \n", num_arg, runtime);
 	fclose(data_file);
