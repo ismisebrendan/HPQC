@@ -21,29 +21,30 @@ int main(int argc, char **argv)
 	double runtime = 0.0;
 	FILE *data_file;
 
-	// Get the time before starting
-	timespec_get(&start_time, TIME_UTC);
-	
 	// declare and initialise the numerical argument variable
 	int num_arg = check_args(argc, argv);
 
 	// creates a vector variable
 	// int my_vector[num_arg]; // suffers issues for large vectors
 	int* my_vector = malloc (num_arg * sizeof(int));
+	
+	// Get the time before initialising the vector
+	timespec_get(&start_time, TIME_UTC);
+	
 	// and initialises every element
 	initialise_vector(my_vector, num_arg, 0);
 
 	// sums the vector
 	int my_sum = sum_vector(my_vector, num_arg);
 
+	// Get the time after summing the vector
+    	timespec_get(&end_time, TIME_UTC);
+	
 	// prints the sum
 	printf("Sum: %d\n", my_sum);
 
 	// if we use malloc, must free when done!
 	free(my_vector);
-
-	// Get the time after summing the vector
-    	timespec_get(&end_time, TIME_UTC);
 
 	// Calculate the runtime
 	time_diff = calculate_runtime(start_time, end_time);

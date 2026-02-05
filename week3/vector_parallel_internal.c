@@ -23,9 +23,6 @@ int main(int argc, char **argv)
 	double runtime = 0.0;
 	FILE *data_file;
 	
-	// Get the time before starting
-	timespec_get(&start_time, TIME_UTC);
-	
 	// error handling variable
 	int ierror = 0;
 
@@ -46,6 +43,9 @@ int main(int argc, char **argv)
 	// checks the universe size is correct
 	check_uni_size(uni_size);
 	
+	// Get the time before initialising the vector
+	timespec_get(&start_time, TIME_UTC);
+	
 	// creates a vector variable
 	// int my_vector[num_arg]; // suffers issues for large vectors
 	int* my_vector = malloc (num_arg * sizeof(int));
@@ -54,12 +54,6 @@ int main(int argc, char **argv)
 
 	// find the sum in parallel
 	sum_vector_p(my_vector, num_arg, my_rank, uni_size);
-
-	// finalise MPI
-	ierror = MPI_Finalize();
-
-	// if we use malloc, must free when done!
-	free(my_vector);
 
 	// sort out the time only if this is the root node
 	if (my_rank == 0)
@@ -77,6 +71,13 @@ int main(int argc, char **argv)
 		fprintf(data_file, "%d, %d, %lf \n", uni_size, num_arg, runtime);
 		fclose(data_file);
 	}
+
+	// finalise MPI
+	ierror = MPI_Finalize();
+
+	// if we use malloc, must free when done!
+	free(my_vector);
+
 	return 0;
 }
 
