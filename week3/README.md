@@ -156,5 +156,28 @@ This essentially finds the (np-1)th triangular number, where np is the number of
 ## Timing vector_serial_edited.c
 ```vector_serial.c``` was edited to instead set element i of the vector to (initial value + i)^2 rather than just intial value. The initial value was left at 0. This does lead to overflows for large arrays.
 
+For low values, when timing the files externally, the precision was low enough that 0.00 s were recorded, as such there are sections of the log-log graphs where there is no data shown for the external processes, this is a product of the precision available unfortunately.
+
+### External timing
+![The time recorded externally on a linear scale](./images/external_plot.png)
+The time recorded externally on a linear scale.
+
+![The time recorded externally on a log-log scale](./images/external_plot_log.png)
+The time recorded externally on a log-log scale.
+
+### Internal timing
+![The time recorded internally on a linear scale](./images/internal_plot.png)
+The time recorded internally on a linear scale.
+
+![The time recorded internally on a log-log scale](./images/internal_plot_log.png)
+The time recorded internally on a log-log scale.
+
+### Both timings
+![The time recorded internally and exteranlly on a linear scale](./images/serial_plot.png)
+The time recorded internally and exteranlly on a linear scale.
+
+![The time recorded internally and exteranlly on a log-log scale](./images/serial_plot_log.png)
+The time recorded internally and exteranlly on a log-log scale.
+
 ## Comparison of serial and parallel computation
 The time taken to sum the first 1860 square numbers, in steps of 10, was found for the serial case and for the parallel case with all numbers of processors from 2 to 16. 1860 was chosen as this was the last value before which integer overflows occur when performing the sum. They were benchmarked internally and externally.
