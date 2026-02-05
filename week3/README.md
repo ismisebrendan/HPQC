@@ -160,23 +160,29 @@ For low values, when timing the files externally, the precision was low enough t
 
 ### External timing
 ![The time recorded externally on a linear scale](./images/external_plot.png)
+
 The time recorded externally on a linear scale.
 
 ![The time recorded externally on a log-log scale](./images/external_plot_log.png)
+
 The time recorded externally on a log-log scale.
 
 ### Internal timing
 ![The time recorded internally on a linear scale](./images/internal_plot.png)
+
 The time recorded internally on a linear scale.
 
 ![The time recorded internally on a log-log scale](./images/internal_plot_log.png)
+
 The time recorded internally on a log-log scale.
 
 ### Both timings
 ![The time recorded internally and exteranlly on a linear scale](./images/serial_plot.png)
+
 The time recorded internally and exteranlly on a linear scale.
 
 ![The time recorded internally and exteranlly on a log-log scale](./images/serial_plot_log.png)
+
 The time recorded internally and exteranlly on a log-log scale.
 
 ## Comparison of serial and parallel computation
