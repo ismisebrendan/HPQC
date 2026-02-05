@@ -8,7 +8,7 @@ internal = np.genfromtxt('./data/internal_timing.txt', delimiter=',')
 
 
 plt.plot(internal[:,0], internal[:,1], marker='o', markersize=3, label='Internal')
-plt.grid()
+plt.grid(g
 plt.legend(loc='upper left')
 
 plt.title('Time recorded internally')
