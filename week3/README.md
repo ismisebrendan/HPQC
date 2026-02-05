@@ -203,7 +203,7 @@ In the case where the overhead is included, the parallel process takes significa
 
 In these cases the time taken for the parallel process varies between approximately 0.25 and 1.75 s as the number of tasks increases. This is seen no matter the number of processes used. This suggests some internal variability in how long the overhead takes to run (as this is significantly longer than the times seen in the case where overhead was not measured and so the time taken to sum the values is relatively insignificant).
 
-This appears to be random, and running the code again, the same variability is seen, for different exact values.
+This appears to be random, and running the code again, the same variability is seen, for different lengths of the vector.
 
 There are also two random points in the non-overhead case, one each for 9 processors and 16 processors, which take significantly longer than the other vectors to compute the sum, but this is again a random result and not replicated when running the code again.
 
