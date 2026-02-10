@@ -57,7 +57,7 @@ void client_task(int uni_size, int my_rank)
 	MPI_Send(&send_message, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
 
 	// print the message
-        printf("Hello, I am %d of %d. Sent %d to Rank %d\n", my_rank, uni_size, send_message, dest);
+	printf("Hello, I am %d of %d. Sent %d to Rank %d\n", my_rank, uni_size, send_message, dest);
 }
 
 void root_task(int uni_size, int my_rank)
