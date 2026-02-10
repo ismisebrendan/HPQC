@@ -7,7 +7,9 @@
  - ```comm_test_Ssend_mpi.c``` - ```comm_test_func_mpi.c``` edited to explicitly use ```MPI_Ssend``` only. [AN MPI FILE]
  - ```comm_test_Bsend_mpi.c``` - ```comm_test_func_mpi.c``` edited to explicitly use ```MPI_Bsend``` only. [AN MPI FILE]
  - ```comm_test_Rsend_mpi.c``` - ```comm_test_func_mpi.c``` edited to explicitly use ```MPI_Rsend``` only. [AN MPI FILE]
-
+ - ```comm_test_Isend_mpi.c``` - ```comm_test_func_mpi.c``` edited to explicitly use ```MPI_Isend``` only. [AN MPI FILE]
+ - ```pingpong.c``` - A file that sends a counter back and forth between two processors and times how long it takes. [AN MPI FILE]
+ - ```run_pingpong.sh``` - Runs ```pingpong.c``` repeatedly for a number of different inputs.
 
 ## What comm_test_mpi.c does
 
