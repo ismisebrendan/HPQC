@@ -15,6 +15,12 @@ int counter;
 
 int main (int argc, char **argv)
 {
+	// for timing 
+	struct timespec start_time, end_time, time_diff;
+	double runtime = 0.0;
+	double average_time = 0.0;
+	FILE *data_file;
+
 	// initialise the counter
 	counter = 0;
 
@@ -38,6 +44,8 @@ int main (int argc, char **argv)
 	// check the number of processors
 	check_uni_size(uni_size);
 
+	// get the time
+	timespec_get(&start_time, TIME_UTC);
 
 	while (counter < num_pings)
 	{
@@ -47,6 +55,27 @@ int main (int argc, char **argv)
 	
 	// finalise MPI
 	ierror = MPI_Finalize();
+
+	timespec_get(&end_time, TIME_UTC);
+
+	// only do the timing stuff if root node
+	if (my_rank == 0)
+	{
+		time_diff = calculate_runtime(start_time, end_time);
+		runtime = to_second_float(time_diff);
+
+		average_time = runtime / counter;
+		
+		// print to console
+		printf("Counter: %d\nTotal time: %f\nAverage time: %f\n", counter, runtime, average_time);
+	
+		// also print to a file
+		data_file = fopen("./data/pingpong.txt", "a");
+		// File format: counter, total time, average time
+		fprintf(data_file, "%d, %lf, %lf \n", counter, runtime, average_time);
+		fclose(data_file);
+	}
+
 	return 0;
 }
 
@@ -144,4 +173,49 @@ void check_uni_size(int uni_size)
                 // and exit COMPLETELY
                 exit(-1);
 	}
+}
+
+double to_second_float(struct timespec in_time)
+{
+	// creates and initialises the variables
+	float out_time = 0.0;
+	long int seconds, nanoseconds;
+	seconds = nanoseconds = 0;
+
+	// extracts the elements from in_time
+	seconds = in_time.tv_sec;
+	nanoseconds = in_time.tv_nsec;
+
+	// calculates the time in seconds by adding the seconds and the nanoseconds divided by 1e9
+	out_time = seconds + nanoseconds/1e9;
+
+	// returns the time as a double
+	return out_time;
+}
+
+struct timespec calculate_runtime(struct timespec start_time, struct timespec end_time)
+{
+	// creates and initialises the variables
+	struct timespec time_diff;
+	long int seconds, nanoseconds;
+	seconds = nanoseconds = 0;
+	double runtime = 0.0;
+
+	// extracts the elements from start_time and end_time
+	seconds = end_time.tv_sec - start_time.tv_sec;
+	nanoseconds = end_time.tv_nsec - start_time.tv_nsec;
+
+	// if the ns part is negative
+	if (nanoseconds < 0)
+	{
+		// "carry the one!"
+		seconds = seconds - 1;
+		nanoseconds = ((long int) 1e9) - nanoseconds;
+	}
+
+	// creates the runtime
+	time_diff.tv_sec = seconds;
+	time_diff.tv_nsec = nanoseconds;
+
+	return time_diff;
 }
