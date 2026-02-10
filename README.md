@@ -35,4 +35,7 @@ mpirun -np numer_of_processors weekX/bin/output_file_name
 
 MPI files are labelled in the ```README.md``` files in their respective folders with [AN MPI FILE].
 
-All ```.sh``` files assume the C and MPI files have been compiled to ```./bin/file_name_without_extension```.
+All ```.sh``` files assume the C and MPI files have been compiled to ```./bin/file_name_without_extension```. They should be run with
+```
+bash file_name.sh
+```
