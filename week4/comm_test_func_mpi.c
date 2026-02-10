@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-void check_uni_size(int uni_size);
+void check_uni_size(int uni_size), root_task(int uni_size, int my_rank);
 
 int main(int argc, char **argv) 
 {
@@ -30,19 +30,7 @@ int main(int argc, char **argv)
 
 	if (0 == my_rank)
 	{
-		// iterates through all the other ranks
-		for (int their_rank = 1; their_rank < uni_size; their_rank++)
-		{
-			// sets the source argument to the rank of the sender
-			source = their_rank;
-
-			// receives the messages
-			MPI_Recv(&recv_message, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
-
-			// prints the message from the sender
-			printf("Hello, I am %d of %d. Received %d from Rank %d\n",
-						my_rank, uni_size, recv_message, source);
-		} // end for (int their_rank = 1; their_rank < uni_size; their_rank++)
+		root_task(uni_size, my_rank);
 	} // end if (0 == my_rank)
 	else // i.e. (0 != my_rank)
 	{
@@ -64,6 +52,28 @@ int main(int argc, char **argv)
 	// finalise MPI
 	ierror = MPI_Finalize();
 	return 0;
+}
+
+void root_task(int uni_size, int my_rank)
+{
+	// creates and initialies transmission variables
+	int send_message, recv_message, count, dest, source, tag;
+	send_message = recv_message = dest = source = tag = 0;
+	count = 1;
+	MPI_Status status;
+	
+	// iterate through other ranks
+	for (int their_rank = 1; their_rank < uni_size; their_rank++)
+	{
+		// set source to sender rank
+		source = their_rank;
+
+		// receive the message
+		MPI_Recv(&recv_message, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+
+		// prints the message from the sender
+		printf("Hello, I am %d of %d. Received %d from Rank %d\n", my_rank, uni_size, recv_message, source);
+	}
 }
 
 void check_uni_size(int uni_size)
