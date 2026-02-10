@@ -20,14 +20,10 @@ int main(int argc, char **argv)
 	ierror = MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
 	ierror = MPI_Comm_size(MPI_COMM_WORLD,&uni_size);
 
-	// creates and initialies transmission variables
-	int send_message, recv_message, count, dest, source, tag;
-	send_message = recv_message = dest = source = tag = 0;
-	count = 1;
-	MPI_Status status;
-	
+	// check the number of processors
 	check_uni_size(uni_size);
 
+	// check which task to do and do it
 	check_task(uni_size, my_rank);
 
 	// finalise MPI
@@ -50,10 +46,9 @@ void check_task(int uni_size, int my_rank)
 void client_task(int uni_size, int my_rank)
 {
 	// creates and initialies transmission variables
-	int send_message, recv_message, count, dest, source, tag;
-	send_message = recv_message = dest = source = tag = 0;
+	int send_message, count, dest,  tag;
+	send_message = dest = tag = 0;
 	count = 1;
-	MPI_Status status;
 
 	// create message
 	send_message = my_rank * 10;
@@ -68,8 +63,8 @@ void client_task(int uni_size, int my_rank)
 void root_task(int uni_size, int my_rank)
 {
 	// creates and initialies transmission variables
-	int send_message, recv_message, count, dest, source, tag;
-	send_message = recv_message = dest = source = tag = 0;
+	int recv_message, count, source, tag;
+	recv_message = source = tag = 0;
 	count = 1;
 	MPI_Status status;
 	
@@ -106,5 +101,3 @@ void check_uni_size(int uni_size)
                 exit(-1);
 	}
 }
-
-
