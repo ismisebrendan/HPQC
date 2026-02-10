@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-void check_uni_size(int uni_size), root_task(int uni_size, int my_rank), client_task(int uni_size, int my_rank);
+void check_uni_size(int uni_size), root_task(int uni_size, int my_rank), client_task(int uni_size, int my_rank), check_task(int uni_size, int my_rank);
 
 int main(int argc, char **argv) 
 {
@@ -28,6 +28,15 @@ int main(int argc, char **argv)
 	
 	check_uni_size(uni_size);
 
+	check_task(uni_size, my_rank);
+
+	// finalise MPI
+	ierror = MPI_Finalize();
+	return 0;
+}
+
+void check_task(int uni_size, int my_rank)
+{
 	if (0 == my_rank)
 	{
 		root_task(uni_size, my_rank);
@@ -36,11 +45,6 @@ int main(int argc, char **argv)
 	{
 		client_task(uni_size, my_rank);
 	} // end else // i.e. (0 != my_rank)
-	
-
-	// finalise MPI
-	ierror = MPI_Finalize();
-	return 0;
 }
 
 void client_task(int uni_size, int my_rank)
