@@ -32,6 +32,8 @@ The order in which the ranks return is variable, and the message from rank i nee
 
 ## Different send types
 
+The first day that I tested this the below is what I got (all more or less behaving the same), however I plan to check again later.
+
 ### Ssend
 
 When running ```comm_test_Ssend_mpi.c``` the client tasks can still print in any order (they are mostly in order, however there are some times when they print out of order), interspersed with the prints from the root tasks. However, the root task messages are printed completely in order (increasing i).
@@ -43,3 +45,7 @@ This is similar to the original file, the client tasks return messages in seemin
 ### Rsend
 
 This appears to behave the same as the Bsend file.
+
+### Isend
+
+Also appears to behave the same as the Bsend file.
