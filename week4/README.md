@@ -23,4 +23,4 @@ Then, upon receiving the message the root processor prints
 Hello, I am 0 of N. Received 10i from Rank i
 ```
 
-The rank is variable, however the message from rank i must arrive before the message from rank 0.
+The order in which the ranks return is variable, and the message from rank i need not be printed before the corresponding message from rank 0 is.
