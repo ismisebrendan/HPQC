@@ -3,7 +3,7 @@
 ## Files in this directory
 
  - ```comm_test_mpi.c``` - File copied from the course repository. [AN MPI FILE]
-
+ - ```comm_test_func_mpi.c``` - ```comm_test_mpi.c``` edited to be function-based. [AN MPI FILE]
 
 
 
