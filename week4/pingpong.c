@@ -79,18 +79,20 @@ int main (int argc, char **argv)
 	return 0;
 }
 
+// check whether root or not, then do required task
 void ping_pong(int my_rank)
 {
 	if (0 == my_rank)
 	{
 		ping();
 	}
-	else // i.e. (0 != my_rank)
+	else
 	{
 		pong();
 	}
 }
 
+// client receives and then sends
 void pong()
 {
 	// create and initialise transmission variables
@@ -112,6 +114,7 @@ void pong()
 
 }
 
+// root sends and then receives
 void ping()
 {
 	// create and initialise transmission variables
@@ -175,6 +178,7 @@ void check_uni_size(int uni_size)
 	}
 }
 
+// for timing
 double to_second_float(struct timespec in_time)
 {
 	// creates and initialises the variables
