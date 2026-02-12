@@ -53,6 +53,7 @@ void client_task(int uni_size, int my_rank)
 	// for timing 
 	struct timespec start_time, end_time, time_diff;
 	double runtime = 0.0;
+	FILE *data_file;
 	
 	// get the time
 	timespec_get(&start_time, TIME_UTC);
@@ -78,6 +79,12 @@ void client_task(int uni_size, int my_rank)
 	runtime = to_second_float(time_diff);
 
 	printf("%d took %f s to send\n", my_rank, runtime);
+
+	// save the time taken to a file
+	data_file = fopen("./data/Bsend_send_time.txt", "a");
+	// File format: no. processors, rank, time to send
+	fprintf(data_file, "%d, %d, %lf\n", uni_size, my_rank, runtime);
+	fclose(data_file);
 }
 
 void root_task(int uni_size, int my_rank)
@@ -85,6 +92,7 @@ void root_task(int uni_size, int my_rank)
 	// for timing 
 	struct timespec start_time, end_time, time_diff;
 	double runtime = 0.0;
+	FILE *data_file;
 	
 	// creates and initialies transmission variables
 	int recv_message, count, source, tag;
@@ -114,6 +122,11 @@ void root_task(int uni_size, int my_rank)
 		runtime = to_second_float(time_diff);
 
 		printf("%d took %f s to receive\n", my_rank, runtime);
+		// save the time taken to a file
+		data_file = fopen("./data/Bsend_revc_time.txt", "a");
+		// File format: no. processors, rank from, time to receive
+		fprintf(data_file, "%d, %d, %lf\n", uni_size, their_rank, runtime);
+		fclose(data_file);
 	}
 }
 
