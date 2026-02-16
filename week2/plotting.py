@@ -1,9 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Plot the time for each language separately
+##############################################
+#                                            #
+# Plot the time for each language separately #
+#                                            #
+##############################################
 
-## Python
+##########
+# Python #
+##########
 print_py = np.genfromtxt('./data/python_time_print_results.txt', delimiter=',')
 save_py = np.genfromtxt('./data/python_time_save_results.txt', delimiter=',')
 read_py = np.genfromtxt('./data/python_time_read_results.txt', delimiter=',')
@@ -41,7 +47,9 @@ ax2.set_xscale('log')
 plt.savefig('./data/python_plot_log.png')
 plt.close()
 
-## C 
+#####
+# C # 
+#####
 print_c = np.genfromtxt('./data/c_time_print_results.txt', delimiter=',')
 save_c = np.genfromtxt('./data/c_time_save_results.txt', delimiter=',')
 read_c = np.genfromtxt('./data/c_time_read_results.txt', delimiter=',')
@@ -79,9 +87,15 @@ ax2.set_xscale('log')
 plt.savefig('./data/c_plot_log.png')
 plt.close()
 
-# Plot the time for each operation separately, with both languages
+####################################################################
+#                                                                  #
+# Plot the time for each operation separately, with both languages #
+#                                                                  #
+####################################################################
 
-## Print
+#########
+# Print #
+#########
 fig, ax1 = plt.subplots()
 
 ax1.plot(print_py[:,0], print_py[:,1], marker='o', markersize=3, label='Python')
@@ -89,7 +103,6 @@ ax1.plot(print_c[:,0], print_c[:,1], marker='o', markersize=3, label='C')
 ax1.set_ylabel('Time [s]')
 ax1.set_xlabel('Input value')
 ax1.grid()
-
 plt.legend()
 
 plt.title('Time to print the data')
@@ -101,7 +114,9 @@ ax1.set_xscale('log')
 plt.savefig('./data/print_plot_log.png')
 plt.close()
 
-## Save
+########
+# Save #
+########
 fig, ax1 = plt.subplots()
 
 ax1.plot(save_py[:,0], save_py[:,1], marker='o', markersize=3, label='Python')
@@ -109,7 +124,6 @@ ax1.plot(save_c[:,0], save_c[:,1], marker='o', markersize=3, label='C')
 ax1.set_ylabel('Time [s]')
 ax1.set_xlabel('Input value')
 ax1.grid()
-
 plt.legend()
 
 plt.title('Time to save the data')
@@ -121,7 +135,9 @@ ax1.set_xscale('log')
 plt.savefig('./data/save_plot_log.png')
 plt.close()
 
-## Read
+########
+# Read #
+########
 fig, ax1 = plt.subplots()
 
 ax1.plot(read_py[:,0], read_py[:,1], marker='o', markersize=3, label='Python')
@@ -129,7 +145,6 @@ ax1.plot(read_c[:,0], read_c[:,1], marker='o', markersize=3, label='C')
 ax1.set_ylabel('Time [s]')
 ax1.set_xlabel('Input file size [B]')
 ax1.grid()
-
 plt.legend()
 
 plt.title('Time to read the data')

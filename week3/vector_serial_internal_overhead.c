@@ -6,8 +6,8 @@
 double to_second_float(struct timespec in_time);
 struct timespec calculate_runtime(struct timespec start_time, struct timespec end_time);
 
-// declares the functions that will be called within main
-// note how declaration lines are similar to the initial line
+// Declares the functions that will be called within main
+// Note how declaration lines are similar to the initial line
 // of a function definition, but with a semicolon at the end;
 int check_args(int argc, char **argv);
 void initialise_vector(int vector[], int size, int initial);
@@ -24,20 +24,19 @@ int main(int argc, char **argv)
 	// Get the time before starting 
 	timespec_get(&start_time, TIME_UTC);
 	
-	// declare and initialise the numerical argument variable
+	// Declare and initialise the numerical argument variable
 	int num_arg = check_args(argc, argv);
 
-	// creates a vector variable
-	// int my_vector[num_arg]; // suffers issues for large vectors
+	// Create a vector variable
 	int* my_vector = malloc (num_arg * sizeof(int));
 	
-	// and initialises every element
+	// And initialise every element
 	initialise_vector(my_vector, num_arg, 0);
 
-	// sums the vector
+	// Sum the vector
 	int my_sum = sum_vector(my_vector, num_arg);
 
-	// prints the sum
+	// Print the sum
 	printf("Sum: %d\n", my_sum);
 
 	// if we use malloc, must free when done!
@@ -59,64 +58,64 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-// defines a function to sum a vector of ints into another int
+// Define a function to sum a vector of ints into another int
 int sum_vector(int vector[], int size)
 {
-	// creates a variable to hold the sum
+	// Create a variable to hold the sum
 	int sum = 0;
 
-	// iterates through the vector
+	// Iterate through the vector
 	for (int i = 0; i < size; i++)
 	{
-		// sets the elements of the vector to the initial value
+		// Set the elements of the vector to the initial value
 		sum += vector[i];
 	}
 
-	// returns the sum
+	// Return the sum
 	return sum;
 }
 
-// defines a function to initialise all values in a vector
+// Define a function to initialise all values in a vector
 void initialise_vector(int vector[], int size, int initial)
 {
-	// iterates through the vector
+	// Iterate through the vector
 	for (int i = 0; i < size; i++)
 	{
-		// sets the elements of the vector to the (initial value + i)**2
+		// Set the elements of the vector to the (initial value + i)**2
 		vector[i] = (initial + i)*(initial + i);
 	}
 }
 
-// defines a function to print a vector of ints
+// Define a function to print a vector of ints
 void print_vector(int vector[], int size)
 {
-	// iterates through the vector
+	// Iterate through the vector
 	for (int i = 0; i < size; i++)
 	{
-		// prints the elements of the vector to the screen
+		// Print the elements of the vector to the screen
 		printf("%d\n", vector[i]);
 	}
 }
 
-// defines a function that checks your arguments to make sure they'll do what you need
+// Define a function that checks your arguments to make sure they'll do what you need
 int check_args(int argc, char **argv)
 {
-	// declare and initialise the numerical argument
+	// Declare and initialise the numerical argument
 	int num_arg = 0;
 
-	// check the number of arguments
-	if (argc == 2) // program name and numerical argument
+	// Check the number of arguments
+	if (argc == 2) // Program name and numerical argument
 	{
-		// declare and initialise the numerical argument
+		// Declare and initialise the numerical argument
 		num_arg = atoi(argv[1]);
 	}
-	else // the number of arguments is incorrect
+	else // The number of arguments is incorrect
 	{
-		// raise an error
+		// Raise an error
 		fprintf(stderr, "ERROR: You did not provide a numerical argument!\n");
 		fprintf(stderr, "Correct use: %s [NUMBER]\n", argv[0]);
 
-		// and exit COMPLETELY
+		// And exit COMPLETELY
 		exit (-1);
 	}
 	return num_arg;
@@ -124,35 +123,35 @@ int check_args(int argc, char **argv)
 
 double to_second_float(struct timespec in_time)
 {
-	// creates and initialises the variables
+	// Create and initialise the variables
 	float out_time = 0.0;
 	long int seconds, nanoseconds;
 	seconds = nanoseconds = 0;
 
-	// extracts the elements from in_time
+	// Extract the elements from in_time
 	seconds = in_time.tv_sec;
 	nanoseconds = in_time.tv_nsec;
 
-	// calculates the time in seconds by adding the seconds and the nanoseconds divided by 1e9
+	// Calculate the time in seconds by adding the seconds and the nanoseconds divided by 1e9
 	out_time = seconds + nanoseconds/1e9;
 
-	// returns the time as a double
+	// Return the time as a double
 	return out_time;
 }
 
 struct timespec calculate_runtime(struct timespec start_time, struct timespec end_time)
 {
-	// creates and initialises the variables
+	// Create and initialise the variables
 	struct timespec time_diff;
-	long int seconds, nanoseconds;
+	long int seconds, nanoseconds;     
 	seconds = nanoseconds = 0;
 	double runtime = 0.0;
 
-	// extracts the elements from start_time and end_time
+	// Extract the elements from start_time and end_time
 	seconds = end_time.tv_sec - start_time.tv_sec;
 	nanoseconds = end_time.tv_nsec - start_time.tv_nsec;
 
-	// if the ns part is negative
+	// If the ns part is negative
 	if (nanoseconds < 0)
 	{
 		// "carry the one!"
@@ -160,7 +159,7 @@ struct timespec calculate_runtime(struct timespec start_time, struct timespec en
 		nanoseconds = ((long int) 1e9) - nanoseconds;
 	}
 
-	// creates the runtime
+	// Create the runtime
 	time_diff.tv_sec = seconds;
 	time_diff.tv_nsec = nanoseconds;
 

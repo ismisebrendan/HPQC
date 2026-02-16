@@ -6,27 +6,27 @@ void check_uni_size(int uni_size), root_task(int uni_size, int my_rank), client_
 
 int main(int argc, char **argv) 
 {
-	// declare and initialise error handling variable
+	// Declare and initialise error handling variable
 	int ierror = 0;
 	
-	// declare and initialise rank and size varibles
+	// Declare and initialise rank and size varibles
 	int my_rank, uni_size;
 	my_rank = uni_size = 0;
 
-	// intitalise MPI
+	// Intitalise MPI
 	ierror = MPI_Init(&argc, &argv);
 
-	// gets the rank and world size
+	// Get the rank and world size
 	ierror = MPI_Comm_rank(MPI_COMM_WORLD,&my_rank);
 	ierror = MPI_Comm_size(MPI_COMM_WORLD,&uni_size);
 
-	// check the number of processors
+	// Check the number of processors
 	check_uni_size(uni_size);
 
-	// check which task to do and do it
+	// Check which task to do and do it
 	check_task(uni_size, my_rank);
 
-	// finalise MPI
+	// Finalise MPI
 	ierror = MPI_Finalize();
 	return 0;
 }
@@ -36,57 +36,57 @@ void check_task(int uni_size, int my_rank)
 	if (0 == my_rank)
 	{
 		root_task(uni_size, my_rank);
-	} // end if (0 == my_rank)
-	else // i.e. (0 != my_rank)
+	}
+	else
 	{
 		client_task(uni_size, my_rank);
-	} // end else // i.e. (0 != my_rank)
+	}
 }
 
 void client_task(int uni_size, int my_rank)
 {
-	// creates and initialies transmission variables
+	// Create and initialise transmission variables
 	int send_message, count, dest,  tag;
 	send_message = dest = tag = 0;
 	count = 1;
 
-	// create message
+	// Create message
 	send_message = my_rank * 10;
 
-	// send the message
+	// Send the message
 	MPI_Bsend(&send_message, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
 
-	// print the message
+	// Print the message
 	printf("Hello, I am %d of %d. Sent %d to Rank %d\n", my_rank, uni_size, send_message, dest);
 }
 
 void root_task(int uni_size, int my_rank)
 {
-	// creates and initialies transmission variables
+	// Create and initialise transmission variables
 	int recv_message, count, source, tag;
 	recv_message = source = tag = 0;
 	count = 1;
 	MPI_Status status;
 	
-	// iterate through other ranks
+	// Iterate through other ranks
 	for (int their_rank = 1; their_rank < uni_size; their_rank++)
 	{
-		// set source to sender rank
+		// Set source to sender rank
 		source = their_rank;
 
-		// receive the message
+		// Receive the message
 		MPI_Recv(&recv_message, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
 
-		// prints the message from the sender
+		// Print the message from the sender
 		printf("Hello, I am %d of %d. Received %d from Rank %d\n", my_rank, uni_size, recv_message, source);
 	}
 }
 
 void check_uni_size(int uni_size)
 {
-	// minimum size
+	// Minimum size
 	int min_uni_size = 2;
-	// check we have the minimum size
+	// Check we have the minimum size
 	if (uni_size >= min_uni_size)
 	{
 		return;
@@ -97,7 +97,7 @@ void check_uni_size(int uni_size)
                 fprintf(stderr, "Unable to communicate with fewer than %d processes.", min_uni_size);
                 fprintf(stderr, "MPI communicator size = %d\n", uni_size);
 
-                // and exit COMPLETELY
+                // And exit COMPLETELY
                 exit(-1);
 	}
 }
