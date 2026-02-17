@@ -41,7 +41,6 @@ int main(int argc, char **argv)
 	// Create a vector variable if the root node
 	if (my_rank == 0)
 	{
-		printf("Init vector");
 		my_vector = malloc(num_arg * sizeof(int));
 		initialise_vector(my_vector, num_arg, 0);
 	}
