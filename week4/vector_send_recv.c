@@ -6,8 +6,9 @@
 int check_args(int argc, char **argv);
 void initialise_vector(int vector[], int size, int initial);
 void print_vector(int vector[], int size);
-int sum_vector_p(int vector[], int size, int my_rank, int uni_size);
+int sum_vector_p(int size, int my_rank, int uni_size);
 void check_uni_size(int uni_size);
+void root_task(int size, int uni_size);
 
 int main(int argc, char **argv)
 {
@@ -31,49 +32,104 @@ int main(int argc, char **argv)
 	// Check the universe size is correct
 	check_uni_size(uni_size);
 	
-	// Create a vector variable
-		int* my_vector = malloc (num_arg * sizeof(int));
-	// And initialise every element
-	initialise_vector(my_vector, num_arg, 0);
+	if (my_rank == 0)
+	{
+		root_task(num_arg, uni_size);
+	}
 
 	// Find the sum in parallel
-	sum_vector_p(my_vector, num_arg, my_rank, uni_size);
+	sum_vector_p(num_arg, my_rank, uni_size);
 
 	// Finalise MPI
 	ierror = MPI_Finalize();
 
-	// Free when done
-	free(my_vector);
-
 	return 0;
 }
 
-// Sum the vector in parallel
-int sum_vector_p(int vector[], int size, int my_rank, int uni_size)
+// Split up the vector and then send it to all processes
+void root_task(int size, int uni_size)
 {
-	// Store the partial sum
-	int partial_sum = 0;
+	// Create a vector variable
+	int* my_vector = malloc (size * sizeof(int));
+	// And initialise every element
+	initialise_vector(my_vector, size, 0);	
 
-	// Initialise stop
-	int stop;
-
-	// Break up the vector
 	int chunk = size / uni_size;
 
-	int start = my_rank * chunk;
+	// Variables for splitting up the vector
+	int start, stop;
 
-	// If this is the last process take all elements at the end as well
+	// Create the transmission variables
+	int count, tag;
+	tag = 0;
+
+	// Send a chunk to each process
+	for (int dest = 0; dest < uni_size; dest++)
+	{
+		start = dest * chunk;
+
+		// If this is the last process to be sent to, send elements at the end as well
+		if (uni_size - 1 == dest)
+		{
+			stop = size;
+		}
+		else // Otherwise send up to the start of the next chunk
+		{
+			stop = (dest + 1) * chunk;
+		}
+
+		// The count is the size of the vector
+		count = stop - start;
+		
+		// Send a vector with the start and end points
+		int* send_vector = malloc(count * sizeof(int));
+		for (int i = 0; i < count; i++)
+		{
+			send_vector[i] = my_vector[i + start];
+		}
+		
+		MPI_Send(send_vector, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
+	}
+	free(my_vector);
+}
+
+// Sum the vector in parallel
+int sum_vector_p(int size, int my_rank, int uni_size)
+{
+	// Initialise some variables
+	int start, stop;
+
+	// Receive the sent vector
+
+	// First find the size of the vector
+	int chunk = size / uni_size;
+	start = my_rank * chunk;
+	// If this is the last process to be sent to, get elements at the end as well
 	if (uni_size - 1 == my_rank)
 	{
 		stop = size;
 	}
-	else // otherwise take up to the start of the next chunk
+	else // Otherwise send up to the start of the next chunk
 	{
 		stop = (my_rank + 1) * chunk;
 	}
 
+	// Create the transmission variables
+	int recv_message, count, source, tag;
+	recv_message = source = tag = 0;
+	count = stop - start;
+	MPI_Status status;
+	
+	int* vector = malloc(count * sizeof(int));
+
+	MPI_Recv(vector, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+	
+
+	// Store the partial sum
+	int partial_sum = 0;
+
 	// Sum this specific chunk
-	for (int i = start; i < stop; i++)
+	for (int i = 0; i < count; i++)
 	{
 		partial_sum += vector[i];
 	}
@@ -112,6 +168,7 @@ int sum_vector_p(int vector[], int size, int my_rank, int uni_size)
 		printf("Sum: %d\n", total_sum);
 		return total_sum;
 	}
+	free(vector);
 }
 
 // Define a function to initialise all values in a vector
