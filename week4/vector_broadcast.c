@@ -8,7 +8,6 @@ void initialise_vector(int vector[], int size, int initial);
 void print_vector(int vector[], int size);
 int sum_vector_p(int vector[], int size, int my_rank, int uni_size);
 void check_uni_size(int uni_size);
-void root_task();
 
 int main(int argc, char **argv)
 {
@@ -32,12 +31,23 @@ int main(int argc, char **argv)
 	// Check the universe size is correct
 	check_uni_size(uni_size);
 
+	// Variables for broadcasting
+	int count;
+	count = num_arg;
+
+	// Initialise the vector variable
+	int* my_vector = malloc(num_arg * sizeof(int));
+	
 	// Create a vector variable if the root node
 	if (my_rank == 0)
 	{
-		root_task()
+		printf("Init vector");
+		my_vector = malloc(num_arg * sizeof(int));
+		initialise_vector(my_vector, num_arg, 0);
 	}
 
+	MPI_Bcast(my_vector, count, MPI_INT, 0, MPI_COMM_WORLD);
+	
 	// Find the sum in parallel
 	sum_vector_p(my_vector, num_arg, my_rank, uni_size);
 
@@ -48,28 +58,11 @@ int main(int argc, char **argv)
 	free(my_vector);
 
 	return 0;
-}
-
-// Root task
-void root_task()
-{
-	// Initially generate the vector and broadcast it to the clients
-
-	// Variables for broadcasting
-	int count;
-	count = 1;
-
-	int* my_vector = malloc (num_arg * sizeof(int));
-	initialise_vector(my_vector, num_arg, 0);
-
-	MPI_Bcast(&my_vector, count, MPI_INT, 0, MPI_COMM_WORLD)
-}
+} 
 
 // Sum the vector in parallel
 int sum_vector_p(int vector[], int size, int my_rank, int uni_size)
 {
-	// Get the broadcast from the root
-	MPI_Bcast(&my_vector, count, MPI_INT, 0, MPI_COMM_WORLD)
 
 	// Store the partial sum
 	int partial_sum = 0;
@@ -108,7 +101,7 @@ int sum_vector_p(int vector[], int size, int my_rank, int uni_size)
 		
 		MPI_Send(&partial_sum, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
 	}
-	else // If the root, receive the vector and sum it
+	else // If the root, receive the vector sums and sum them
 	{
 		// Create the transmission variables
 		int recv_message, count, source, tag;
