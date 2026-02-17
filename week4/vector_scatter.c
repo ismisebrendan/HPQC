@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-// Declare the functions that will be called within main
+// Declares the functions that will be called within main
 int check_args(int argc, char **argv);
-void initialise_vector(int vector[], int size, int initial);
+void initialise_vector(int vector[], int size, int initial, int extra_zeros);
 void print_vector(int vector[], int size);
 int sum_vector_p(int vector[], int size, int my_rank, int uni_size);
 void check_uni_size(int uni_size);
@@ -30,50 +30,54 @@ int main(int argc, char **argv)
 	
 	// Check the universe size is correct
 	check_uni_size(uni_size);
-	
-	// Create a vector variable
-		int* my_vector = malloc (num_arg * sizeof(int));
-	// And initialise every element
-	initialise_vector(my_vector, num_arg, 0);
 
+	// Variables for broadcasting
+	int count;
+
+	// Initialise the vector variable
+	int* my_vector = malloc(num_arg * sizeof(int));
+
+	// Initialise a vector variable to receive the scattered parts
+	int* recv_vector = malloc(num_arg * sizeof(int) / uni_size);
+	
+	// If the num_arg for the size of the array is not divisible by the number of processors this will cause some elements not to be summed
+	// So we add some 0s onto the end of the array to combat this
+	int extra_zeros = uni_size - (num_arg % uni_size);
+
+	// Create a vector variable if the root node
+	if (my_rank == 0)
+	{	
+		my_vector = malloc((num_arg + extra_zeros) * sizeof(int));
+		initialise_vector(my_vector, num_arg, 0, extra_zeros);
+	}
+
+	// Take into account the extra zeros
+	count = (num_arg + extra_zeros) / uni_size;
+	
+	MPI_Scatter(my_vector, count, MPI_INT, recv_vector, count, MPI_INT, 0, MPI_COMM_WORLD);
+	
 	// Find the sum in parallel
-	sum_vector_p(my_vector, num_arg, my_rank, uni_size);
+	sum_vector_p(recv_vector, count, my_rank, uni_size);
 
 	// Finalise MPI
 	ierror = MPI_Finalize();
 
 	// Free when done
 	free(my_vector);
+	free(recv_vector);
 
 	return 0;
-}
+} 
 
 // Sum the vector in parallel
 int sum_vector_p(int vector[], int size, int my_rank, int uni_size)
 {
+
 	// Store the partial sum
 	int partial_sum = 0;
 
-	// Initialise stop
-	int stop;
-
-	// Break up the vector
-	int chunk = size / uni_size;
-
-	int start = my_rank * chunk;
-
-	// If this is the last process take all elements at the end as well
-	if (uni_size - 1 == my_rank)
-	{
-		stop = size;
-	}
-	else // otherwise take up to the start of the next chunk
-	{
-		stop = (my_rank + 1) * chunk;
-	}
-
 	// Sum this specific chunk
-	for (int i = start; i < stop; i++)
+	for (int i = 0; i < size; i++)
 	{
 		partial_sum += vector[i];
 	}
@@ -88,7 +92,7 @@ int sum_vector_p(int vector[], int size, int my_rank, int uni_size)
 		
 		MPI_Send(&partial_sum, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
 	}
-	else // If the root, receive the vector and sum it
+	else // If the root, receive the vector sums and sum them
 	{
 		// Create the transmission variables
 		int recv_message, count, source, tag;
@@ -115,13 +119,19 @@ int sum_vector_p(int vector[], int size, int my_rank, int uni_size)
 }
 
 // Define a function to initialise all values in a vector
-void initialise_vector(int vector[], int size, int initial)
+void initialise_vector(int vector[], int size, int initial, int extra_zeros)
 {
 	// Iterates through the vector
 	for (int i = 0; i < size; i++)
 	{
 		// Set the elements of the vector to the (initial value + i)**2
 		vector[i] = (initial + i)*(initial + i);
+	}
+
+	// Now add the extra zeros
+	for (int i = size; i < size + extra_zeros; i++)
+	{
+		vector[i] = 0;
 	}
 }
 
