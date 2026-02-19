@@ -115,4 +115,13 @@ While the counter is less than the input the root sends a message to the other n
 
 The whole thing is timed and the total and average times are found.
 
+#### Results
 The average time for different numbers of pings is show below.
+
+Apart from a few outliers the mean time to send a message is approximately 1 $\mu s$.
+
+### Bandwidth
+The ```pingpong_vector.c``` file does the same as ```pingpong.c``` except it sends a vector of different size between the processors. The time taken was recorded for varying message size, from 16 B to 2090000 B (2 MiB = 2097152 B), and plotted, as seen below.
+
+A line was fit to this, however it can be clearly seen that there are two clear trends. For some unknown reason, approximately 18% of the time it would take over 1.5 s to send the vector back and forth. There appears to be no clear patternThe size of the vector is never a simple power of 2 in these cases.
+
