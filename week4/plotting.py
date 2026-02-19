@@ -15,14 +15,14 @@ for i in range(2, 17):
     plt.xlabel('Time')
     plt.ylabel('Count')
     plt.legend()
-    plt.save('./data/Bsend_send.png')
+    plt.savefig('./data/Bsend_send.png')
 
     plt.hist(Bsend_recv[Bsend_recv[:,0] == i][:,2], hbins, label='Receive time', fill=False, edgecolor='tab:blue')
     plt.title(f'Time taken for Bsend for {i} processors to receive')
     plt.xlabel('Time')
     plt.ylabel('Count')
     plt.legend()
-    plt.save('./data/Bsend_recv.png')
+    plt.savefig('./data/Bsend_recv.png')
 
 # Isend
 Isend_recv = np.genfromtxt('./data/Isend_revc_time.txt', delimiter=',')
@@ -38,14 +38,14 @@ for i in range(2, 17):
     plt.xlabel('Time')
     plt.ylabel('Count')
     plt.legend()
-    plt.save('./data/Isend_send.png')
+    plt.savefig('./data/Isend_send.png')
 
     plt.hist(Isend_recv[Isend_recv[:,0] == i][:,2], hbins, label='Receive time', fill=False, edgecolor='tab:blue')
     plt.title(f'Time taken for Isend for {i} processors to receive')
     plt.xlabel('Time')
     plt.ylabel('Count')
     plt.legend()
-    plt.save('./data/Isend_recv.png')
+    plt.savefig('./data/Isend_recv.png')
 
 # Rsend
 Rsend_recv = np.genfromtxt('./data/Rsend_revc_time.txt', delimiter=',')
@@ -61,14 +61,14 @@ for i in range(2, 17):
     plt.xlabel('Time')
     plt.ylabel('Count')
     plt.legend()
-    plt.save('./data/Rsend_send.png')
+    plt.savefig('./data/Rsend_send.png')
 
     plt.hist(Rsend_recv[Rsend_recv[:,0] == i][:,2], hbins, label='Receive time', fill=False, edgecolor='tab:blue')
     plt.title(f'Time taken for Rsend for {i} processors to receive')
     plt.xlabel('Time')
     plt.ylabel('Count')
     plt.legend()
-    plt.save('./data/Rsend_recv.png')
+    plt.savefig('./data/Rsend_recv.png')
 
 # Ssend
 Ssend_recv = np.genfromtxt('./data/Ssend_revc_time.txt', delimiter=',')
@@ -84,14 +84,14 @@ for i in range(2, 17):
     plt.xlabel('Time')
     plt.ylabel('Count')
     plt.legend()
-    plt.save('./data/Ssend_send.png')
+    plt.savefig('./data/Ssend_send.png')
 
     plt.hist(Ssend_recv[Ssend_recv[:,0] == i][:,2], hbins, label='Receive time', fill=False, edgecolor='tab:blue')
     plt.title(f'Time taken for Ssend for {i} processors to receive')
     plt.xlabel('Time')
     plt.ylabel('Count')
     plt.legend()
-    plt.save('./data/Ssend_recv.png')
+    plt.savefig('./data/Ssend_recv.png')
 
 # Ping pong
 pingpong = np.genfromtxt('./data/pingpong.txt', delimiter=',')
