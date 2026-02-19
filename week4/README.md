@@ -118,10 +118,20 @@ The whole thing is timed and the total and average times are found.
 #### Results
 The average time for different numbers of pings is show below.
 
+![The average time for different numbers of pings](./images/pingpong.png)
+
 Apart from a few outliers the mean time to send a message is approximately 1 $\mu s$.
 
 ### Bandwidth
 The ```pingpong_vector.c``` file does the same as ```pingpong.c``` except it sends a vector of different size between the processors. The time taken was recorded for varying message size, from 16 B to 2090000 B (2 MiB = 2097152 B), and plotted, as seen below.
 
 A line was fit to this, however it can be clearly seen that there are two clear trends. For some unknown reason, approximately 18% of the time it would take over 1.5 s to send the vector back and forth. There appears to be no clear patternThe size of the vector is never a simple power of 2 in these cases.
+
+The data and fit are shown below.
+
+![The time taken to send a message of varying size between two processors](./images/pingpong_vector.png)
+
+The equation of the red line is: y = 3.3777e-7 x + 0.1202 
+
+The equation of the black line is: y = 1.3848e-7 x + 0.04661
 
