@@ -13,7 +13,8 @@
  - ```comm_test_Rsend_time.c``` - ```comm_test_Rsend_mpi.c``` edited to explicitly recorde how long it takes each client to send the messages and how long it takes the root to receive each message. [AN MPI FILE]
  - ```comm_test_Isend_time.c``` - ```comm_test_Isend_mpi.c``` edited to explicitly recorde how long it takes each client to send the messages and how long it takes the root to receive each message. [AN MPI FILE]
  - ```run_send_timing.sh``` - Runs each ```comm_test_*send_time.c``` files 100 times for 2 to 16 processors to see the variability in the send and receive times for each of these for a varitey of different numbers of processors.
- - ```pingpong.c``` - A file that sends a counter back and forth between two processors and times how long it takes. [AN MPI FILE]
+ - ```pingpong.c``` - A file that sends a counter back and forth between two processors and times how long it takes. At the time of running it takes an integer as an input to determine how many times to send the counter. Should only be run using 2 processors. [AN MPI FILE]
+ - ```pingpong_vector.c``` - A file that sends a vector back and forth between two processors and times how long it takes. At the time of running it takes an integer as an input to determine how many times to send the vector and how many elements shuold be in the vector (same input and value for both). Should only be run using 2 processors. [AN MPI FILE]
  - ```run_pingpong.sh``` - Runs ```pingpong.c``` repeatedly for a number of different inputs.
  - ```vector_broadcast``` - Like the ```vector_parallel.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel.c), however only the root node initialises the vector, it then sends the vector to each node.
  - ```vector_send_recv``` - Like the ```vector_parallel.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel.c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Send``` and ```MPI_Recv``` commands.
@@ -101,3 +102,17 @@ The table below shows the mean times and standard devaiation to receive a messag
 
 
 In most cases the variance is on the order of the mean time or even greater than the mean time, showing the inconsistencies in the time taken. It is also generally very short.
+
+
+## Ping pong
+### pingpong.c
+#### How the file works
+This file uses the same timing components used everywhere in this repository that something was timed internally.
+
+At the time of running the file it takes an integer input for the number of times to send a message back and forth, it checks this input. It then initialises a counter variable and does the standard set-up for MPI, e.g. checking the universe size (should be 2 for this file). 
+
+While the counter is less than the input the root sends a message to the other node (node 1), this message is simply the counter in its current state, it then waits to hear back from the other node. Node 1 then receives the counter, it increments the counter and then sends it back to the root.
+
+The whole thing is timed and the total and average times are found.
+
+The average time for different numbers of pings is show below.
