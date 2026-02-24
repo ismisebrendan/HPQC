@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <mpi.h>
+#include <time.h>
 
 // Declare the functions that will be called within main
 int check_args(int argc, char **argv);
@@ -10,8 +11,20 @@ int sum_vector_p(int size, int my_rank, int uni_size);
 void check_uni_size(int uni_size);
 void root_task(int size, int uni_size);
 
+// Necessary for timing
+double to_second_float(struct timespec in_time);
+struct timespec calculate_runtime(struct timespec start_time, struct timespec end_time);
+
 int main(int argc, char **argv)
 {
+	// For timing 
+	struct timespec start_time, end_time, time_diff;
+	double runtime = 0.0;
+	FILE *data_file;
+	
+	// Get the time
+	timespec_get(&start_time, TIME_UTC);
+	
 	// Error handling variable
 	int ierror = 0;
 
@@ -42,6 +55,22 @@ int main(int argc, char **argv)
 
 	// Finalise MPI
 	ierror = MPI_Finalize();
+
+	// If the root node finish up the timing stuff
+	if (my_rank == 0)
+	{
+		// Get end time
+		timespec_get(&end_time, TIME_UTC);
+
+		time_diff = calculate_runtime(start_time, end_time);
+		runtime = to_second_float(time_diff);
+
+		// Save the time taken to a file
+		data_file = fopen("./data/vector_send_recv_time.txt", "a");
+		// File format: no. processors, input, time
+		fprintf(data_file, "%d, %d, %lf\n", uni_size, num_arg, runtime);
+		fclose(data_file);
+	}
 
 	return 0;
 }
@@ -236,4 +265,49 @@ void check_uni_size(int uni_size)
 		// And exit COMPLETELY
 		exit(-1);
 	}
+}
+
+double to_second_float(struct timespec in_time)
+{
+	// Create and initialise the variables
+	float out_time = 0.0;
+	long int seconds, nanoseconds;
+	seconds = nanoseconds = 0;
+
+	// Extract the elements from in_time
+	seconds = in_time.tv_sec;
+	nanoseconds = in_time.tv_nsec;
+
+	// Calculate the time in seconds by adding the seconds and the nanoseconds divided by 1e9
+	out_time = seconds + nanoseconds/1e9;
+
+	// Return the time as a double
+	return out_time;
+}
+
+struct timespec calculate_runtime(struct timespec start_time, struct timespec end_time)
+{
+	// Create and initialise the variables
+	struct timespec time_diff;
+	long int seconds, nanoseconds;
+	seconds = nanoseconds = 0;
+	double runtime = 0.0;
+
+	// Extract the elements from start_time and end_time
+	seconds = end_time.tv_sec - start_time.tv_sec;
+	nanoseconds = end_time.tv_nsec - start_time.tv_nsec;
+
+	// If the ns part is negative
+	if (nanoseconds < 0)
+	{
+		// "carry the one!"
+		seconds = seconds - 1;
+		nanoseconds = ((long int) 1e9) - nanoseconds;
+	}
+
+	// Create the runtime
+	time_diff.tv_sec = seconds;
+	time_diff.tv_nsec = nanoseconds;
+
+	return time_diff;
 }
