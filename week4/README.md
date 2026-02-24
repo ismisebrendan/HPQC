@@ -16,9 +16,9 @@
  - ```pingpong.c``` - A file that sends a counter back and forth between two processors and times how long it takes. At the time of running it takes an integer as an input to determine how many times to send the counter. Should only be run using 2 processors. [AN MPI FILE]
  - ```pingpong_vector.c``` - A file that sends a vector back and forth between two processors and times how long it takes. At the time of running it takes an integer as an input to determine how many times to send the vector and how many elements shuold be in the vector (same input and value for both). Should only be run using 2 processors. [AN MPI FILE]
  - ```run_pingpong.sh``` - Runs ```pingpong.c``` repeatedly for a number of different inputs.
- - ```vector_broadcast``` - Like the ```vector_parallel.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel.c), however only the root node initialises the vector, it then sends the vector to each node.
- - ```vector_send_recv``` - Like the ```vector_parallel.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel.c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Send``` and ```MPI_Recv``` commands.
- - ```vector_scatter``` - Like the ```vector_parallel.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel.c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Scatter```.
+ - ```vector_broadcast.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then sends the vector to each node. [AN MPI FILE]
+ - ```vector_send_recv.c``` - Like the ```vector_parallel_internal..c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Send``` and ```MPI_Recv``` commands. [AN MPI FILE]
+ - ```vector_scatter.c``` - Like the ```vector_parallel_internal..c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Scatter```. [AN MPI FILE]
  - ```plotting.py``` - Generates histograms of the time taken for each of the different send types and the number of processors, finds the mean times and standard deviation in these. Also generates the plots for the ping pong files.
 
 ## What comm_test_mpi.c does
@@ -135,3 +135,10 @@ The equation of the red line is: y = 3.3777e-7 x + 0.1202
 
 The equation of the black line is: y = 1.3848e-7 x + 0.04661
 
+In both cases, the intercept corresponds to the latency, while the slope is related to the bandwidth.
+
+## Broadcast vs Scatter vs DIY
+
+In ```vector_scatter.c``` before the vector is scattered to the other nodes the root node adds a number of trailing elements 0 value. This is because if they are not added and the number of vector elements is not divisible by the number of processors, the remaining elements are not scattered and so are not used during the summation of the vector. By adding a number of 0-valued elements to the end of the array it ensures that each non-zero value is sent and summed over, and the extra elements do not add to this sum.
+
+As an initial naive precdiction I imagine that the ```vector_scatter.c``` is fastest as this is the type of procedure it is designed for, so should be better optimised for this than something I pur together. ```vector_broadcast.c``` is likely to be the next fastest as it avoids loops for purposes of sending the vector, and while the whole vector is sent in this method, the splitting up is done in parallel, while in ```vector_send_recv.c``` each splitting of the vector is done in series, slowing down the method overall.
