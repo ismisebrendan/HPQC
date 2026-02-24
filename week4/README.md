@@ -142,3 +142,12 @@ In both cases, the intercept corresponds to the latency, while the slope is rela
 In ```vector_scatter.c``` before the vector is scattered to the other nodes the root node adds a number of trailing elements 0 value. This is because if they are not added and the number of vector elements is not divisible by the number of processors, the remaining elements are not scattered and so are not used during the summation of the vector. By adding a number of 0-valued elements to the end of the array it ensures that each non-zero value is sent and summed over, and the extra elements do not add to this sum.
 
 As an initial naive precdiction I imagine that the ```vector_scatter.c``` is fastest as this is the type of procedure it is designed for, so should be better optimised for this than something I pur together. ```vector_broadcast.c``` is likely to be the next fastest as it avoids loops for purposes of sending the vector, and while the whole vector is sent in this method, the splitting up is done in parallel, while in ```vector_send_recv.c``` each splitting of the vector is done in series, slowing down the method overall.
+
+While running the files I ran into this error when running ```mpirun -np 10 bin/vector_scatter 61```:
+
+```
+malloc(): invalid next size (unsorted)
+[cheetah:2670487] *** Process received signal ***
+[cheetah:2670487] Signal: Aborted (6)
+[cheetah:2670487] Signal code:  (-6)
+```
