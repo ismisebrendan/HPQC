@@ -143,7 +143,7 @@ In ```vector_scatter.c``` before the vector is scattered to the other nodes the 
 
 As an initial naive precdiction I imagine that the ```vector_scatter.c``` is fastest as this is the type of procedure it is designed for, so should be better optimised for this than something I pur together. ```vector_broadcast.c``` is likely to be the next fastest as it avoids loops for purposes of sending the vector, and while the whole vector is sent in this method, the splitting up is done in parallel, while in ```vector_send_recv.c``` each splitting of the vector is done in series, slowing down the method overall.
 
-While running the files I ran into this error when running ```mpirun -np 10 bin/vector_scatter 61```:
+While running the files I ran into this error when running ```mpirun -np 10 bin/vector_scatter 61``` or ```mpirun -np 10 bin/vector_scatter 60```:
 
 ```
 malloc(): invalid next size (unsorted)
@@ -151,3 +151,5 @@ malloc(): invalid next size (unsorted)
 [cheetah:2670487] Signal: Aborted (6)
 [cheetah:2670487] Signal code:  (-6)
 ```
+
+I haven't run into it for any other input or number of processors. I genuinely cannot figure it out. I decided to simply avoid these values and did not run into the same error again. I may come back and try to figure out how to prevent it, but have not yet. It occurs after the ```sum_vector_p()``` function is called, when ```MPI_Finalize()``` is being called anyway.
