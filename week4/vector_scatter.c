@@ -67,25 +67,25 @@ int main(int argc, char **argv)
 
 	// Create a vector variable if the root node
 	if (my_rank == 0)
-	{		
+	{
 		my_vector = malloc((num_arg + extra_zeros) * sizeof(int));
 		initialise_vector(my_vector, num_arg, 0, extra_zeros);
 	}	
 
 	// Take into account the extra zeros
 	count = (num_arg + extra_zeros) / uni_size;
-	
+
 	MPI_Scatter(my_vector, count, MPI_INT, recv_vector, count, MPI_INT, 0, MPI_COMM_WORLD);
 	
+	free(my_vector);
 	// Find the sum in parallel
 	sum_vector_p(recv_vector, count, my_rank, uni_size);
 
-	// Free when done
-	free(my_vector);
-	free(recv_vector);
-
 	// Finalise MPI
 	ierror = MPI_Finalize();
+	
+	// Free when done
+	free(recv_vector);
 	
 	// If the root node finish up the timing stuff
 	if (my_rank == 0)
