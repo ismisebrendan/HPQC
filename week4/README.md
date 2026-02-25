@@ -19,7 +19,8 @@
  - ```vector_broadcast.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then sends the vector to each node. Takes an integer as an input. [AN MPI FILE]
  - ```vector_send_recv.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Send``` and ```MPI_Recv``` commands. Takes an integer as an input. [AN MPI FILE]
  - ```vector_scatter.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Scatter```. Takes an integer as an input. [AN MPI FILE]
- - ```plotting.py``` - Generates histograms of the time taken for each of the different send types and the number of processors, finds the mean times and standard deviation in these. Also generates the plots for the ping pong files.
+ - ```vector_gather.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however it uses ```MPI_Gather``` to collect all partial sums and then adds them, instead of using many ```MPI_Send``` and ```MPI_Recv``` statements. Takes an integer as an input. [AN MPI FILE]
+ - ```plotting.py``` - Does all plotting and data analysis tasks.
 
 ## What comm_test_mpi.c does
 
