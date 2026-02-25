@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 # Bsend
 Bsend_recv = np.genfromtxt('./data/Bsend_revc_time.txt', delimiter=',')
 Bsend_send = np.genfromtxt('./data/Bsend_send_time.txt', delimiter=',')
@@ -138,3 +139,58 @@ plt.ylabel('T [s]')
 plt.xlabel('N [b]')
 plt.savefig('./data/pingpong_vector.png')
 plt.close()
+
+
+# Broadcast, scatter, send recv
+broadcast = np.genfromtxt('./data/vector_broadcast_time.txt', delimiter=',')
+scatter = np.genfromtxt('./data/vector_scatter_time.txt', delimiter=',')
+sendrecv = np.genfromtxt('./data/vector_send_recv_time.txt', delimiter=',')
+
+# Find the mean times for each combination
+bmeans = np.mean(broadcast.reshape((15, 11, 10, 3)), axis=2)
+smeans = np.mean(scatter.reshape((15, 11, 10, 3)), axis=2)
+srmeans = np.mean(sendrecv.reshape((15, 11, 10, 3)), axis=2)
+
+slow_lst = []
+sec_lst = []
+fast_lst = []
+
+print('Processors, Elements, Fastest  , Second   , Slowest')
+for i in range(len(bmeans)):
+     for j in range(len(bmeans[i])):
+          # Find slowest, then fastest
+          if (bmeans[i,j,2] < srmeans[i,j,2]) and (bmeans[i,j,2] < smeans[i,j,2]):
+               slowest = 'Broadcast'
+               if srmeans[i,j,2] < smeans[i,j,2]:
+                    second = 'Send recv'
+                    fastest = 'Scatter'
+               else:
+                    fastest = 'Send recv'
+                    second = 'Scatter'
+          elif (srmeans[i,j,2] < bmeans[i,j,2]) and (srmeans[i,j,2] < smeans[i,j,2]):
+               slowest = 'Send recv'
+               if bmeans[i,j,2] < smeans[i,j,2]:
+                    second = 'Broadcast'
+                    fastest = 'Scatter'
+               else:
+                    fastest = 'Broadcast'
+                    second = 'Scatter'
+          elif (srmeans[i,j,2] < bmeans[i,j,2]) and (srmeans[i,j,2] < smeans[i,j,2]):
+               slowest = 'Scatter'
+               if bmeans[i,j,2] < srmeans[i,j,2]:
+                    second = 'Broadcast'
+                    fastest = 'Send recv'
+               else:
+                    fastest = 'Broadcast'
+                    second = 'Send recv'
+          slow_lst.append(slowest)
+          sec_lst.append(second)
+          fast_lst.append(fastest)
+          print(f'{i+2:10.0f}, {10+20*j:8.0f}, {fastest:9}, {second:9}, {slowest:9}')
+
+print('---')
+print(f'Slowest count : Broadcast {slow_lst.count("Broadcast")}, Scatter {slow_lst.count("Scatter")}, Send recv {slow_lst.count("Send recv")}')
+print(f'Second count : Broadcast {sec_lst.count("Broadcast")}, Scatter {sec_lst.count("Scatter")}, Send recv {sec_lst.count("Send recv")}')
+print(f'Fastest count : Broadcast {fast_lst.count("Broadcast")}, Scatter {fast_lst.count("Scatter")}, Send recv {fast_lst.count("Send recv")}')
+
+
