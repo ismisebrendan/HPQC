@@ -5,8 +5,8 @@
 
 # Test for 2 to 16 processors
 for j in {2..16}; do
-	# Test for number of elements from 50 to 1000
-	for i in {50..1000..50}; do
+	# Test for number of elements from 10 to 210
+	for i in {10..210..20}; do
 		# Repeat 10 times to get a mean
 		for k in {1..10}; do
 			mpirun -np $j ./bin/vector_broadcast $i
