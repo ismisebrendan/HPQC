@@ -3,8 +3,6 @@
 #include <mpi.h>
 
 // Declare the functions that will be called within main
-// Note how declaration lines are similar to the initial line
-// of a function definition, but with a semicolon at the end;
 int check_args(int argc, char **argv);
 void initialise_vector(int vector[], int size, int initial);
 void print_vector(int vector[], int size);
@@ -80,37 +78,18 @@ int sum_vector_p(int vector[], int size, int my_rank, int uni_size)
 		partial_sum += vector[i];
 	}
 
-	// If not the root, send to the root
-	if (my_rank != 0)
+	// Transmission variables
+	int count, root;
+	count = 1;
+	root = 0;
+
+	int total_sum;
+
+	MPI_Reduce(&partial_sum, &total_sum, count, MPI_INT, MPI_SUM, root, MPI_COMM_WORLD);
+
+	// Output and return
+	if (my_rank == 0)
 	{
-		// Create the transmission variables
-		int count, dest, tag;
-		dest = tag = 0;
-		count = 1;
-		
-		MPI_Send(&partial_sum, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
-	}
-	else // If the root, receive the vector and sum it
-	{
-		// Create the transmission variables
-		int recv_message, count, source, tag;
-		recv_message = source = tag = 0;
-		count = 1;
-		MPI_Status status;
-
-		// The final sum, starting with what was calculated here
-		int total_sum = partial_sum;
-
-		// For all other ranks
-		for (source = 1; source < uni_size; source++)
-		{
-			// Receive the message
-			MPI_Recv(&recv_message, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
-			// Add this to the running total
-			total_sum += recv_message;
-		}
-
-		// Output and return
 		printf("Sum: %d\n", total_sum);
 		return total_sum;
 	}
