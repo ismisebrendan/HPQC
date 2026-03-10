@@ -159,25 +159,25 @@ print('Processors, Elements, Fastest  , Second   , Slowest')
 for i in range(len(bmeans)):
      for j in range(len(bmeans[i])):
           # Find slowest, then fastest
-          if (bmeans[i,j,2] < srmeans[i,j,2]) and (bmeans[i,j,2] < smeans[i,j,2]):
+          if (bmeans[i,j,2] > srmeans[i,j,2]) and (bmeans[i,j,2] > smeans[i,j,2]):
                slowest = 'Broadcast'
-               if srmeans[i,j,2] < smeans[i,j,2]:
+               if srmeans[i,j,2] > smeans[i,j,2]:
                     second = 'Send recv'
                     fastest = 'Scatter'
                else:
                     fastest = 'Send recv'
                     second = 'Scatter'
-          elif (srmeans[i,j,2] < bmeans[i,j,2]) and (srmeans[i,j,2] < smeans[i,j,2]):
+          elif (srmeans[i,j,2] > bmeans[i,j,2]) and (srmeans[i,j,2] > smeans[i,j,2]):
                slowest = 'Send recv'
-               if bmeans[i,j,2] < smeans[i,j,2]:
+               if bmeans[i,j,2] > smeans[i,j,2]:
                     second = 'Broadcast'
                     fastest = 'Scatter'
                else:
                     fastest = 'Broadcast'
                     second = 'Scatter'
-          elif (srmeans[i,j,2] < bmeans[i,j,2]) and (srmeans[i,j,2] < smeans[i,j,2]):
+          elif (smeans[i,j,2] > srmeans[i,j,2]) and (smeans[i,j,2] > bmeans[i,j,2]):
                slowest = 'Scatter'
-               if bmeans[i,j,2] < srmeans[i,j,2]:
+               if bmeans[i,j,2] > srmeans[i,j,2]:
                     second = 'Broadcast'
                     fastest = 'Send recv'
                else:
@@ -207,28 +207,28 @@ sec_lst = []
 fast_lst = []
 
 print('Processors, Elements, Fastest  , Second   , Slowest')
-for i in range(len(rmeans)):
-     for j in range(len(rmeans[i])):
+for i in range(len(bmeans)):
+     for j in range(len(bmeans[i])):
           # Find slowest, then fastest
-          if (rmeans[i,j,2] < srmeans[i,j,2]) and (rmeans[i,j,2] < gmeans[i,j,2]):
+          if (rmeans[i,j,2] > srmeans[i,j,2]) and (rmeans[i,j,2] > gmeans[i,j,2]):
                slowest = 'Reduce'
-               if srmeans[i,j,2] < gmeans[i,j,2]:
+               if srmeans[i,j,2] > gmeans[i,j,2]:
                     second = 'Send recv'
                     fastest = 'Gather'
                else:
                     fastest = 'Send recv'
                     second = 'Gather'
-          elif (srmeans[i,j,2] < rmeans[i,j,2]) and (srmeans[i,j,2] < gmeans[i,j,2]):
+          elif (srmeans[i,j,2] > rmeans[i,j,2]) and (srmeans[i,j,2] > gmeans[i,j,2]):
                slowest = 'Send recv'
-               if rmeans[i,j,2] < gmeans[i,j,2]:
+               if rmeans[i,j,2] > gmeans[i,j,2]:
                     second = 'Reduce'
                     fastest = 'Gather'
                else:
                     fastest = 'Reduce'
                     second = 'Gather'
-          elif (srmeans[i,j,2] < rmeans[i,j,2]) and (srmeans[i,j,2] < gmeans[i,j,2]):
+          elif (gmeans[i,j,2] > srmeans[i,j,2]) and (gmeans[i,j,2] > rmeans[i,j,2]):
                slowest = 'Gather'
-               if rmeans[i,j,2] < srmeans[i,j,2]:
+               if rmeans[i,j,2] > srmeans[i,j,2]:
                     second = 'Reduce'
                     fastest = 'Send recv'
                else:
