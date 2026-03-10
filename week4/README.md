@@ -154,3 +154,15 @@ malloc(): invalid next size (unsorted)
 ```
 
 I haven't run into it for any other input or number of processors. I genuinely cannot figure it out. I decided to simply avoid these values and did not run into the same error again. I may come back and try to figure out how to prevent it, but have not yet. It occurs after the ```sum_vector_p()``` function is called, when ```MPI_Finalize()``` is being called anyway.
+
+The files were all run multiple times for different numbers of processors and input values using ```bash ./run_vectors.sh```. The results are shown below.
+
+|   | Broadcast | Scatter | Send Receive |
+| --- | --- | --- | --- |
+| Slowest | 77 | 0 | 88 |
+| Second | 37 | 86 | 42 |
+| Fastest | 51 | 79 | 35 |
+
+These results and a more complete breakdown can be seen by running ```python3 plotting.py```.
+
+As we can see, there was some variation on which method was fastest and slowest, but scatter was never the slowest method and was the fastest method more times than any others, 47.9% of the time. The send and the receive method was the slowest the highest number of times, 53.3% of the time, and was the fasest the lowest number of times, only 21.2% of the time. The broadcast method seems like it was a good middle ground between the two.
