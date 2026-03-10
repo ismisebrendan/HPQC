@@ -17,9 +17,12 @@
  - ```pingpong_vector.c``` - A file that sends a vector back and forth between two processors and times how long it takes. At the time of running it takes an integer as an input to determine how many times to send the vector and how many elements shuold be in the vector (same input and value for both). Should only be run using 2 processors. Takes an integer as an input. [AN MPI FILE]
  - ```run_pingpong.sh``` - Runs ```pingpong.c``` repeatedly for a number of different inputs.
  - ```vector_broadcast.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then sends the vector to each node. Takes an integer as an input. [AN MPI FILE]
- - ```vector_send_recv.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Send``` and ```MPI_Recv``` commands. Takes an integer as an input. [AN MPI FILE]
+ - ```vector_send_recv.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Send()``` and ```MPI_Recv()``` commands. Takes an integer as an input. [AN MPI FILE]
  - ```vector_scatter.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Scatter```. Takes an integer as an input. [AN MPI FILE]
- - ```vector_gather.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however it uses ```MPI_Gather``` to collect all partial sums and then adds them, instead of using many ```MPI_Send``` and ```MPI_Recv``` statements. Takes an integer as an input. [AN MPI FILE]
+ - ```vector_gather.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however it uses ```MPI_Gather()``` to collect all partial sums and then adds them, instead of using many ```MPI_Send()``` and ```MPI_Recv()``` statements. Takes an integer as an input. [AN MPI FILE]
+ - ```vector_reduce.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however it uses ```MPI_Reduce()``` to collect all partial sums and add them, instead of using many ```MPI_Send()``` and ```MPI_Recv()``` statements. Takes an integer as an input. [AN MPI FILE]
+ - ```run_vectors_b_s_sr.sh``` - Run ```vector_broadcast.c```, ```vector_scatter.c``` and ```vector_send_recv.c``` repeatedly for different input values and numbers of processors to see which one is fastest.
+ - ```run_vectors_r_g.sh``` - Run ```vector_reduce.c```, and ```vector_gather.c``` repeatedly for different input values and numbers of processors to see which one is fastest.
  - ```plotting.py``` - Does all plotting and data analysis tasks.
 
 ## What comm_test_mpi.c does
@@ -140,6 +143,8 @@ In both cases, the intercept corresponds to the latency, while the slope is rela
 
 ## Broadcast vs Scatter vs DIY
 
+The files were run for all numbers of processors, with inputs from 10 to 210 in steps of 20. Each combination was run 10 times each to take a mean time.
+
 In ```vector_scatter.c``` before the vector is scattered to the other nodes the root node adds a number of trailing elements 0 value. This is because if they are not added and the number of vector elements is not divisible by the number of processors, the remaining elements are not scattered and so are not used during the summation of the vector. By adding a number of 0-valued elements to the end of the array it ensures that each non-zero value is sent and summed over, and the extra elements do not add to this sum.
 
 As an initial naive precdiction I imagine that the ```vector_scatter.c``` is fastest as this is the type of procedure it is designed for, so should be better optimised for this than something I pur together. ```vector_broadcast.c``` is likely to be the next fastest as it avoids loops for purposes of sending the vector, and while the whole vector is sent in this method, the splitting up is done in parallel, while in ```vector_send_recv.c``` each splitting of the vector is done in series, slowing down the method overall.
@@ -155,14 +160,39 @@ malloc(): invalid next size (unsorted)
 
 I haven't run into it for any other input or number of processors. I genuinely cannot figure it out. I decided to simply avoid these values and did not run into the same error again. I may come back and try to figure out how to prevent it, but have not yet. It occurs after the ```sum_vector_p()``` function is called, when ```MPI_Finalize()``` is being called anyway.
 
-The files were all run multiple times for different numbers of processors and input values using ```bash ./run_vectors.sh```. The results are shown below.
+The files were all run multiple times for different numbers of processors and input values using ```bash ./run_vectors_b_s_sr.sh```. The results are shown below, the number of times each method was slowest, second fastest and fastest.
 
 |   | Broadcast | Scatter | Send Receive |
 | --- | --- | --- | --- |
-| Slowest | 77 | 0 | 88 |
-| Second | 37 | 86 | 42 |
-| Fastest | 51 | 79 | 35 |
+| Slowest | 57 | 54 | 54 |
+| Second | 54 | 62 | 49 |
+| Fastest | 54 | 49 | 62 |
 
 These results and a more complete breakdown can be seen by running ```python3 plotting.py```.
 
-As we can see, there was some variation on which method was fastest and slowest, but scatter was never the slowest method and was the fastest method more times than any others, 47.9% of the time. The send and the receive method was the slowest the highest number of times, 53.3% of the time, and was the fasest the lowest number of times, only 21.2% of the time. The broadcast method seems like it was a good middle ground between the two.
+As we can see, there was some variation on which method was fastest and slowest, but ```MPI_Broadcast()``` was the slowest method the highest number of times, but was the fastest the second highest number of times. The combination of ```MPI_Send()``` and ```MPI_Recv()``` method was, surprisingly the fastest the highest number of times. However, the values are all very close to each other, and so with a larger sample it might be found that these results are simply due to the small number of samples.
+
+## Gather vs Reduce vs DIY
+
+The files were run for all numbers of processors, with inputs from 10 to 210 in steps of 20. Each combination was run 10 times each to take a mean time.
+
+This is similar to the last part, we are testing ```MPI_Gather()``` and ```MPI_Reduce()``` against a combination of ```MPI_Send()``` and ```MPI_Recv()```. My initial assumption would be that ```MPI_Reduce()``` would be fastest as it sums the values itself and does not rely on a loop to do so, and then ```MPI_Gather()```, as it makes sense that a built-in process would be faster than a custom method. The same data was used for ```vector_send_recv.c``` was used as in the previous part to save on computation time.
+
+
+The files were all run multiple times for different numbers of processors and input values using ```bash ./run_vectors_r_g.sh```. The results are shown below, the number of times each method was slowest, second fastest and fastest.
+
+
+|   | Reduce | Gather | Send Receive |
+| --- | --- | --- | --- |
+| Slowest | 52 | 64 | 49 |
+| Second | 53 | 51 | 61 |
+| Fastest | 60 | 50 | 55 |
+
+These results and a more complete breakdown can be seen by running ```python3 plotting.py```.
+
+Again, there was som variation in which methods were faster, with ```MPI_Reduce()``` being the fastest the highest number of times and ```MPI_Gather()``` being both the slowest most often and fastest least often. Again, the values are all very close to each other, and so with a larger sample it might be found that these results are simply due to the small number of samples.
+
+
+
+
+
