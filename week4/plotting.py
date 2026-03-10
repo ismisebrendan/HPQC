@@ -194,3 +194,52 @@ print(f'Second count : Broadcast {sec_lst.count("Broadcast")}, Scatter {sec_lst.
 print(f'Fastest count : Broadcast {fast_lst.count("Broadcast")}, Scatter {fast_lst.count("Scatter")}, Send recv {fast_lst.count("Send recv")}')
 
 
+# Reduce, gather
+red = np.genfromtxt('./data/vector_reduce_time.txt', delimiter=',')
+gather = np.genfromtxt('./data/vector_gather_time.txt', delimiter=',')
+
+# Find the mean times for each combination
+rmeans = np.mean(red.reshape((15, 11, 10, 3)), axis=2)
+gmeans = np.mean(gather.reshape((15, 11, 10, 3)), axis=2)
+
+slow_lst = []
+sec_lst = []
+fast_lst = []
+
+print('Processors, Elements, Fastest  , Second   , Slowest')
+for i in range(len(rmeans)):
+     for j in range(len(rmeans[i])):
+          # Find slowest, then fastest
+          if (rmeans[i,j,2] < srmeans[i,j,2]) and (rmeans[i,j,2] < gmeans[i,j,2]):
+               slowest = 'Reduce'
+               if srmeans[i,j,2] < gmeans[i,j,2]:
+                    second = 'Send recv'
+                    fastest = 'Gather'
+               else:
+                    fastest = 'Send recv'
+                    second = 'Gather'
+          elif (srmeans[i,j,2] < rmeans[i,j,2]) and (srmeans[i,j,2] < gmeans[i,j,2]):
+               slowest = 'Send recv'
+               if rmeans[i,j,2] < gmeans[i,j,2]:
+                    second = 'Reduce'
+                    fastest = 'Gather'
+               else:
+                    fastest = 'Reduce'
+                    second = 'Gather'
+          elif (srmeans[i,j,2] < rmeans[i,j,2]) and (srmeans[i,j,2] < gmeans[i,j,2]):
+               slowest = 'Gather'
+               if rmeans[i,j,2] < srmeans[i,j,2]:
+                    second = 'Reduce'
+                    fastest = 'Send recv'
+               else:
+                    fastest = 'Reduce'
+                    second = 'Send recv'
+          slow_lst.append(slowest)
+          sec_lst.append(second)
+          fast_lst.append(fastest)
+          print(f'{i+2:10.0f}, {10+20*j:8.0f}, {fastest:9}, {second:9}, {slowest:9}')
+
+print('---')
+print(f'Slowest count : Reduce {slow_lst.count("Reduce")}, Gather {slow_lst.count("Gather")}, Send recv {slow_lst.count("Send recv")}')
+print(f'Second count : Reduce {sec_lst.count("Reduce")}, Gather {sec_lst.count("Gather")}, Send recv {sec_lst.count("Send recv")}')
+print(f'Fastest count : Reduce {fast_lst.count("Reduce")}, Gather {fast_lst.count("Gather")}, Send recv {fast_lst.count("Send recv")}')
