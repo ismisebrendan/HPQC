@@ -172,6 +172,8 @@ These results and a more complete breakdown can be seen by running ```python3 pl
 
 As we can see, there was some variation on which method was fastest and slowest, but ```MPI_Broadcast()``` was the slowest method the highest number of times, but was the fastest the second highest number of times. The combination of ```MPI_Send()``` and ```MPI_Recv()``` method was, surprisingly the fastest the highest number of times. However, the values are all very close to each other, and so with a larger sample it might be found that these results are simply due to the small number of samples.
 
+The files we re-run for values of 10 to 510 in steps of 20, the results can be seen below.
+
 ## Gather vs Reduce vs DIY
 
 The files were run for all numbers of processors, with inputs from 10 to 210 in steps of 20. Each combination was run 10 times each to take a mean time.
@@ -192,7 +194,7 @@ These results and a more complete breakdown can be seen by running ```python3 pl
 
 Again, there was som variation in which methods were faster, with ```MPI_Reduce()``` being the fastest the highest number of times and ```MPI_Gather()``` being both the slowest most often and fastest least often. Again, the values are all very close to each other, and so with a larger sample it might be found that these results are simply due to the small number of samples.
 
-
+The files we re-run for values of 10 to 510 in steps of 20, the results can be seen below.
 
 
 
