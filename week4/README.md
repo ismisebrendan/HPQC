@@ -21,8 +21,10 @@
  - ```vector_scatter.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however only the root node initialises the vector, it then splits up the vector and sends the chunks to the other nodes using ```MPI_Scatter```. Takes an integer as an input. [AN MPI FILE]
  - ```vector_gather.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however it uses ```MPI_Gather()``` to collect all partial sums and then adds them, instead of using many ```MPI_Send()``` and ```MPI_Recv()``` statements. Takes an integer as an input. [AN MPI FILE]
  - ```vector_reduce.c``` - Like the ```vector_parallel_internal.c``` file from [week3](https://github.com/ismisebrendan/HPQC/edit/main/week3/vector_parallel_internal..c), however it uses ```MPI_Reduce()``` to collect all partial sums and add them, instead of using many ```MPI_Send()``` and ```MPI_Recv()``` statements. Takes an integer as an input. [AN MPI FILE]
+ - ```vector_custom.c``` - Like ```vecotr_reduce.c``` but uses a custom-defined reduce operation. Takes an integer as an input. [AN MPI FILE]
  - ```run_vectors_b_s_sr.sh``` - Run ```vector_broadcast.c```, ```vector_scatter.c``` and ```vector_send_recv.c``` repeatedly for different input values and numbers of processors to see which one is fastest.
  - ```run_vectors_r_g.sh``` - Run ```vector_reduce.c```, and ```vector_gather.c``` repeatedly for different input values and numbers of processors to see which one is fastest.
+ - ```run_vectors_custom_reduce.sh``` - Run ```vector_custom.c```, and ```vector_reduce.c``` repeatedly for different input values and numbers of processors to see which one is fastest.
  - ```plotting.py``` - Does all plotting and data analysis tasks.
 
 ## What comm_test_mpi.c does
@@ -196,5 +198,14 @@ Again, there was som variation in which methods were faster, with ```MPI_Reduce(
 
 The files we re-run for values of 10 to 510 in steps of 20, the results can be seen below.
 
+## Custom vs Reduce
 
+
+The files were run for all numbers of processors, with inputs from 10 to 210 in steps of 20. Each combination was run 10 times each to take a mean time.
+
+This is similar to the last part, we are testing ```MPI_Reduce()``` against a custom uperation. My initial assumption would be that ```MPI_Reduce()``` would be fastest as it has been developed and optimised over time by experts, also if I was able to make a custom operation which worked faster then why would anyone ever use ```MPI_Reduce```.
+
+The files were all run multiple times for different numbers of processors and input values using ```bash ./run_vectors_custom_reduce.sh```. The results are shown below, the number of times each method was slower or faster.
+
+After running the files it was found that the custom operation was, surprisingly, faster on average than ```MPI_Reduce()``` for every combination of inputs.
 
