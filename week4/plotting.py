@@ -199,8 +199,8 @@ red = np.genfromtxt('./data/vector_reduce_time.txt', delimiter=',')
 gather = np.genfromtxt('./data/vector_gather_time.txt', delimiter=',')
 
 # Find the mean times for each combination
-rmeans = np.mean(red.reshape((15, 11, 10, 3)), axis=2)
-gmeans = np.mean(gather.reshape((15, 11, 10, 3)), axis=2)
+rmeans = np.mean(red.reshape((15, 26, 10, 3)), axis=2)
+gmeans = np.mean(gather.reshape((15, 26, 10, 3)), axis=2)
 
 slow_lst = []
 sec_lst = []
@@ -243,3 +243,29 @@ print('---')
 print(f'Slowest count : Reduce {slow_lst.count("Reduce")}, Gather {slow_lst.count("Gather")}, Send recv {slow_lst.count("Send recv")}')
 print(f'Second count : Reduce {sec_lst.count("Reduce")}, Gather {sec_lst.count("Gather")}, Send recv {sec_lst.count("Send recv")}')
 print(f'Fastest count : Reduce {fast_lst.count("Reduce")}, Gather {fast_lst.count("Gather")}, Send recv {fast_lst.count("Send recv")}')
+
+# Reduce, custom
+red = np.genfromtxt('./data/vector_reduce_time.txt', delimiter=',')
+cus = np.genfromtxt('./data/vector_custom_time.txt', delimiter=',')
+
+# Find the mean times for each combination
+rmeans = np.mean(red.reshape((15, 26, 10, 3)), axis=2)
+cmeans = np.mean(cus.reshape((15, 26, 10, 3)), axis=2)
+
+slow_lst = []
+fast_lst = []
+
+print('Processors, Elements, Fastest  , Slowest')
+for i in range(len(rmeans)):
+    for j in range(len(rmeans[i])):
+        if rmeans[i,j,2] > cmeans[i,j,2]:
+            slowest = 'Reduce'
+            fastest = 'Custom'
+        
+            slow_lst.append(slowest)
+            fast_lst.append(fastest)
+        print(f'{i+2:10.0f}, {10+20*j:8.0f}, {fastest:9}, {slowest:9}')
+
+print('---')
+print(f'Slowest count : Reduce {slow_lst.count("Reduce")}, Custom {slow_lst.count("Custom")}')
+print(f'Fastest count : Reduce {fast_lst.count("Reduce")}, Custom {fast_lst.count("Custom")}')
