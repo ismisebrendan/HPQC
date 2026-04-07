@@ -34,8 +34,8 @@ int main(int argc, char **argv)
 	ierror = MPI_Init(&argc, &argv);
 
 	// Custom MPI function
-	MPI_Op *op;
-	MPI_Op_create(&MPI_Op_reduce_custom, 1, op);
+	MPI_Op op;
+	MPI_Op_create(MPI_Op_reduce_custom, 1, &op);
 
 
 	// Declare and initialise rank and size
@@ -77,6 +77,8 @@ int main(int argc, char **argv)
 		fclose(data_file);
 	}
 
+	MPI_Op_free(&op);
+
 	// finalise MPI
 	ierror = MPI_Finalize();
 
@@ -86,12 +88,12 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-void (MPI_Op_reduce_custom) (void *input, void *output, int *len, MPI_Datatype *datatype)
+void MPI_Op_reduce_custom (void *input, void *output, int *len, MPI_Datatype *datatype)
 {
 	// Output
 	int out = 0;
 
-	// Get input and outputs as integers
+	// Get input as integer
 	int* in = (int *)input;
 
 	for (int i = 0; i < *len; i++)
