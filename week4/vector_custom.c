@@ -24,6 +24,9 @@ int main(int argc, char **argv)
 	double runtime = 0.0;
 	FILE *data_file;
 	
+	// Get the time
+	timespec_get(&start_time, TIME_UTC);
+	
 	// Error handling variable
 	int ierror = 0;
 
@@ -48,9 +51,6 @@ int main(int argc, char **argv)
 	
 	// Check the universe size is correct
 	check_uni_size(uni_size);
-	
-	// Get the time before initialising the vector
-	timespec_get(&start_time, TIME_UTC);
 	
 	// Creates a vector variable
 	int* my_vector = malloc (num_arg * sizeof(int));
