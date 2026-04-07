@@ -360,7 +360,6 @@ def main():
 
     # saves the animation to disk
     filename = generate_path(basename=file_out, extension='gif')
-    print(filename)
     ani.save(filename=filename, writer="pillow", fps=fps)
 
 
