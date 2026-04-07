@@ -7,16 +7,17 @@ import math as m
 import random
 
 from pathlib import Path
+from ast import literal_eval as make_tuple
 import sys
 
-def generate_path(home_folder = str(Path.home()), subfolder = '/data/', basename = 'output', extension = 'txt'):
+def generate_path(home_folder = str(Path.cwd()), subfolder = '/data/', basename = 'output', extension = 'txt'):
     """This function creates the path to store the data. Note that the data is not 
     stored in the directory the code is executed in. This prevents git repos 
     from becoming cluttered with data that should be separate.
 
     Keyword Args:
         home_folder (str): the root folder in which the file is specified
-            Defaults to Home
+            Defaults to cwd
         subfolder (str): the subfolder in which the file is specified
             Defaults to /data/
         basename (str): the base of the filename to be specified
@@ -167,7 +168,7 @@ def configure_rope(length=50, end_point=True, step_size=1, start = 0):
     return x_positions, y_positions
 
 
-def configure_plot(x_positions, y_positions):
+def configure_plot(x_positions, y_positions, colour):
     """This function sets up the plot for the animation.  It sets the
     initial x and y values, the title and the limits for the axes.
 
@@ -176,6 +177,8 @@ def configure_plot(x_positions, y_positions):
             x-positions of the points on the string
         y_positions (Numpy array of floats): initial values for the
             y-positions of the points on the string
+        colour (any allowed colour in matplotlib): The colour of the
+            points on the string.
 
     Returns:
         fig (matplotlib.figure.Figure): the figure to be animated
@@ -191,7 +194,7 @@ def configure_plot(x_positions, y_positions):
     ax1.set_ylim(-1.1, 1.1)
 
     # creates the plot which will be animated
-    rope, = ax1.plot(x_positions, y_positions, "o", markersize=5, color="green", label="points on string")
+    rope, = ax1.plot(x_positions, y_positions, "o", markersize=5, color=colour, label="points on string")
 
     # creates the legend entry
     ax1.legend(handles=[rope], bbox_to_anchor=(0, 0), loc='upper left')
@@ -284,34 +287,52 @@ def get_params(extension_in='csv', extension_out='gif'):
         extension_out (string): a string containing the extension for the
             type of output file. Default = 'gif'
     """
-    # Try to read the filenames
+    # Try to read the arguments
     try:
         file_in = sys.argv[1]
         file_out = sys.argv[2]
+        if len(sys.argv) == 4:
+            colour = sys.argv[3]
+        else:
+            colour = 'green'
     # If there aren't enough arguments
     except IndexError:
         # Explain the error
-        print("You must specify a file to plot and a file to save to.\nCorrect Useage: \n\t{} [FILENAME_IN] [FILENAME_OUT]".format(sys.argv[0]))
+        print("You must specify a file to plot, a file to save to and a colour for the plot.\nCorrect Useage: \n\t{} [FILENAME_IN] [FILENAME_OUT] (optional [COLOUR])".format(sys.argv[0]))
+        print("If specifying a colour you can use:\n\tA colour name understood by matplotlib.\n\tAn RGB(A) hexcode enclosed by '', e.g. '#ffffff'.\n\tAn RGB(A) tuple enclosed by '', e.g. '(1, 1, 1)'")
         # Exit the program with error status
         exit(-1)
 
     # If the extenions of one or both of the files is incorrect
     if ((file_in.split('.')[-1])!=extension_in) or ((file_out.split('.')[-1])!=extension_out):
-        # If the extension of the input file is not csv
+        # If the extension of the input file is not what is desired
         if ((file_in.split('.')[-1])!=extension_in):
             # Explain the error
              print("The input file you have specified, {} does not appear to be a {} file.".format(file_in, extension_in))
     
-        # If the extension of the output file is not gif
+        # If the extension of the output file is not what is desired
         if ((file_out.split('.')[-1])!=extension_out):
             # Explain the error
             print("The output file you have specified, {} does not appear to be a {} file.".format(file_out, extension_out))
-   
+    
         # Exit the program with error status
         exit(-1)
+    
+    if len(file_out.split('.')) > 2:
+        print('Please do no include "." inside your file names except for extensions')
+        exit(-1)
+    
+    # Save without the extension (makes life easier later)
+    file_out = file_out.split('.')[0]
 
-    # In other circumstances, return the filenames
-    return file_in, file_out
+    # Try to convert the colour to a tuple
+    try:
+        colour = make_tuple(colour)
+    except:
+        pass # Could be a string or hexcode, not necessarily error-worthy
+
+    # In other circumstances, return the filenames and colour
+    return file_in, file_out, colour
 
 def main():
     """This is the main function that executes the rest of the program
@@ -319,7 +340,7 @@ def main():
     namespace allows for local variables and better control of scope.
     """
     # gets the filenames from the command line
-    file_in, file_out = get_params()
+    file_in, file_out, colour = get_params()
 
     # gets the data and its dimensions from the file
     data, num_positions, num_times = get_data(file_in)
@@ -331,14 +352,15 @@ def main():
     x_positions, y_positions = extract_position(data)
 
     # configures the initial state of the plot, including x and y positions of points on the string
-    fig, rope = configure_plot(x_positions, y_positions)
+    fig, rope = configure_plot(x_positions, y_positions, colour)
 
     # initialises the python animation 
     ani = animation.FuncAnimation(fig, animate, num_times, interval=interval, blit=True, # mandatory animation arguments
                                   fargs=(data, rope)) # arguments to the animate function
 
     # saves the animation to disk
-    filename = generate_path(basename = file_out, extension = 'gif')
+    filename = generate_path(basename=file_out, extension='gif')
+    print(filename)
     ani.save(filename=filename, writer="pillow", fps=fps)
 
 
