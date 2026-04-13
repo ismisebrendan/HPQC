@@ -12,8 +12,8 @@ int generate_timestamps(double* time_stamps, int time_steps, double step_size);
 double driver(double time);
 void print_header(FILE** p_out_file, int points);
 void check_uni_size(int uni_size);
-void root_task(FILE** out_file, int i, double* time_stamps);
-void client_task(int my_rank, int uni_size, double time);
+void root_task(FILE** out_file, int i, double* time_stamps, int time_steps);
+void client_task(int my_rank, int uni_size, double time, int time_steps);
 
 // Struct for inputs
 struct Input
@@ -107,28 +107,24 @@ int main(int argc, char **argv)
 		print_header(&out_file, points);
 	}
 
-	// iterates through each time step in the collection
-	for (int i = 0; i < time_steps; i++)
+	if (my_rank == 0)
 	{
-		if (my_rank == 0)
-		{
-			root_task(&out_file, i, time_stamps);
-		}
-		else
-		{
-
-		}
-		// updates the position using a function
-		update_positions(positions, points, time_stamps[i]);
-
-
-		// iterates over all of the points on the line
-		for (int j = 0; j < points; j++)
-		{
-			// prints each y-position to a file
-			fprintf(out_file, ", %lf", positions[j]);
-		}
+		root_task(&out_file, i, time_stamps, time_steps);
 	}
+	else
+	{
+		client_task(my_rank, uni_size, time, time_steps);
+	}
+//		// updates the position using a function
+//		update_positions(positions, points, time_stamps[i]);
+//
+//
+//		// iterates over all of the points on the line
+//		for (int j = 0; j < points; j++)
+//		{
+//			// prints each y-position to a file
+//			fprintf(out_file, ", %lf", positions[j]);
+//		}
 
 	// if we use malloc, must free when done!
 	free(time_stamps);
@@ -155,19 +151,23 @@ void print_header(FILE** p_out_file, int points)
 	fprintf(*p_out_file, "\n");
 }
 
-void root_task(FILE** out_file, int i, double* time_stamps)
+void root_task(FILE** out_file, int i, double* time_stamps, int time_steps)
 {
-	// Print an index and time stamp
-	fprintf(*out_file, "%d, %lf", i, time_stamps[i]);
+	// Iterate through each time step in the collection
+	for (int i = 0; i < time_steps; i++)
+	{
+		// Print an index and time stamp
+		fprintf(*out_file, "%d, %lf", i, time_stamps[i]);
 	
-	// Receive the chunks from the other nodes
+		// Receive the chunks from the other nodes
 	
 	
-	// Print a new line
-	fprintf(*out_file, "\n");
+		// Print a new line
+		fprintf(*out_file, "\n");
+	}
 }
 
-void client_task(int my_rank, int uni_size, double time)
+void client_task(int my_rank, int uni_size, double time, int time_steps)
 {
 	// Transmission variables
 	double last_pos; // Last position of the string, to be sent
@@ -178,37 +178,40 @@ void client_task(int my_rank, int uni_size, double time)
 	int tag = 0;
 	MPI_Status status;
 
-	//
-	// Send values from previous iteration
-	//
-
-	// Unless last node send initial value of final point to next node
-	if (my_rank != uni_size - 1)
+	// Iterate through each time step in the collection
+	for (int i = 0; i < time_steps; i++)
 	{
-		MPI_Send(last_pos, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
-	}
-
-	//
-	// Now update the string
-	//
-
-	// If node 1 run the driver
-	if (my_rank == 1)
-	{
-		// Driver
-		first_pos = driver(time);
-	}
-
-	// If not node 1 get message from previous node
-	if (my_rank != 1)
-	{
-		MPI_Recv(&first_pos, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
-	}
-
-	// Update positions
-
-	// Send all values to root
+		//
+		// Send values from previous iteration
+		//
 	
+		// Unless last node send initial value of final point to next node
+		if (my_rank != uni_size - 1)
+		{
+			MPI_Send(last_pos, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
+		}
+	
+		//
+		// Now update the string
+		//
+	
+		// If node 1 run the driver
+		if (my_rank == 1)
+		{
+			// Driver
+			first_pos = driver(time);
+		}
+	
+		// If not node 1 get message from previous node
+		if (my_rank != 1)
+		{
+			MPI_Recv(&first_pos, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+		}
+	
+		// Update positions
+	
+		// Send all values to root
+	}	
 
 }
 
