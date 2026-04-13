@@ -44,7 +44,7 @@ The correct usage is:
 
 ### Strategy for parallelising
 
-The code will break the string into as many chunks as there are processors minus 1. Except for the root node (node 0) and node 1 which will host the driver each node will take the position of the last point on the previous node at the previous timestamp in order to propagate the wave. Each node except for the last will broadcast the position of their final point to the adjoining node.
+The code will initially break the string into as many chunks as there are processors minus 1. These chunks will be assigned to each node. Except for the root node (node 0) and node 1 which will host the driver each node will take the position of the last point on the previous node at the previous timestamp in order to propagate the wave. Each node except for the last will broadcast the position of their final point to the adjoining node.
 
 The results from each timestamp will be broadcast to the root node which will aggregate them and write them to the output file.
 
@@ -52,6 +52,6 @@ The results from each timestamp will be broadcast to the root node which will ag
 
 In order to minimise the overhead associated with opening and saving the file each time, the data will be stored in memory until the program is finished, and then the root node will save the file.
 
-
+```MPI_Gather()``` and ```MPI_Scatter()``` will not be used as the uneven lengths of chunks causes problems for this method. I cannot use the trick of adding extra 0s to the end of the last chunk here as it would add extra points, and limit freedom in part 3.
 
 
