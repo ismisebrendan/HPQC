@@ -72,7 +72,6 @@ int main(int argc, char **argv)
 	
 	// Declare and initialise the numerical argument variables
 	struct Input in = check_args(argc, argv);
-	
 	int points, cycles, samples;
 	char* out;
 	points = in.points;
