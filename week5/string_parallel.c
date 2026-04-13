@@ -153,8 +153,6 @@ void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, i
 {
 	// Create a vector variable for the current positions, only the root needs this
 	double* positions = (double*) malloc(points * sizeof(double));
-	
-	printf("Running Root task\n");
 
 	// And initialise every element to zero
 	initialise_vector(positions, points, 0.0);
@@ -198,8 +196,6 @@ void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, i
 		MPI_Send(send_positions, count, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD);
 		free(send_positions);
 	}
-	
-	printf("Sent chunks to other nodes\n");
 
 	// Transmission variables for receiving the chunks
 	double* recv_points;
@@ -209,14 +205,17 @@ void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, i
 	// Iterate through each time step in the collection
 	for (int i = 0; i < time_steps; i++)
 	{
-		printf("Root time step: %d\n", i);
+		printf("Root time step: %d, of %d \n", i, time_steps);
 
 		// Print an index and time stamp
 		fprintf(*out_file, "%d, %lf", i, time_stamps[i]);
-	
+
+
 		// Receive the chunks from the other nodes and update positions with them
 		for (int source = 1; source < uni_size; source++)
 		{
+			printf("Preparing to receive from %d\n", source);			
+
 			start = (source - 1) * chunk;
 			
 			if (uni_size - 1 == source)
@@ -229,10 +228,13 @@ void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, i
 			}
 			// The count is the size of the vector
 			count = stop - start;
-			
+		
+			recv_points = malloc(count * sizeof(double));
+
 			// Receive the message
 			MPI_Recv(recv_points, count, MPI_DOUBLE, source, tag_chunk, MPI_COMM_WORLD, &status);
-			
+
+
 			// Now update the positions vector
 			for (int j = start; j < stop; j++)
 		        {
