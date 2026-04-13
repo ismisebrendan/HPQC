@@ -12,8 +12,8 @@ int generate_timestamps(double* time_stamps, int time_steps, double step_size);
 double driver(double time);
 void print_header(FILE** p_out_file, int points);
 void check_uni_size(int uni_size);
-void root_task(FILE** out_file, int i, double* time_stamps, int time_steps);
-void client_task(int my_rank, int uni_size, double time, int time_steps);
+void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, int time_steps);
+void client_task(int my_rank, int uni_size, int time_steps, int points);
 
 // Struct for inputs
 struct Input
@@ -89,15 +89,10 @@ int main(int argc, char **argv)
 	int time_steps = cycles * samples + 1; // total timesteps
 	double step_size = 1.0/samples;
 
-	// creates a vector for the time stamps in the data
+	// Create a vector for the time stamps in the data, all nodes need this
 	double* time_stamps = (double*) malloc(time_steps * sizeof(double));
 	initialise_vector(time_stamps, time_steps, 0.0);
 	generate_timestamps(time_stamps, time_steps, step_size);
-
-	// creates a vector variable for the current positions
-	double* positions = (double*) malloc(points * sizeof(double));
-	// and initialises every element to zero
-	initialise_vector(positions, points, 0.0);
 
 	// Create a file if root node
 	FILE* out_file;
@@ -109,11 +104,11 @@ int main(int argc, char **argv)
 
 	if (my_rank == 0)
 	{
-		root_task(&out_file, i, time_stamps, time_steps);
+		root_task(&out_file, uni_size, points, time_stamps, time_steps);
 	}
 	else
 	{
-		client_task(my_rank, uni_size, time, time_steps);
+		client_task(my_rank, uni_size, time_steps, points);
 	}
 //		// updates the position using a function
 //		update_positions(positions, points, time_stamps[i]);
@@ -126,9 +121,11 @@ int main(int argc, char **argv)
 //			fprintf(out_file, ", %lf", positions[j]);
 //		}
 
+	// Finalise MPI
+	ierror = MPI_Finalize();
+	
 	// if we use malloc, must free when done!
 	free(time_stamps);
-	free(positions);
 
 	// Close the file if root node
 	if (my_rank == 0)
@@ -151,8 +148,53 @@ void print_header(FILE** p_out_file, int points)
 	fprintf(*p_out_file, "\n");
 }
 
-void root_task(FILE** out_file, int i, double* time_stamps, int time_steps)
+void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, int time_steps)
 {
+	// Create a vector variable for the current positions, only the root needs this
+	double* positions = (double*) malloc(points * sizeof(double));
+	// And initialise every element to zero
+	initialise_vector(positions, points, 0.0);
+	
+	// Find how big each chunk is
+	int chunk = points / (uni_size - 1);
+	int start, stop;
+
+	// 
+	// Send the chunks to each node
+	//
+	// Transmission variables
+	int count, tag;
+	tag = 0;
+
+	// Send a chunk to each other node
+	for (int dest = 1; dest < uni_size; dest++)
+	{
+		start = (dest - 1) * chunk;
+
+		// If this is the last process to be sent to, send elements at the end as well
+		if (uni_size - 1 == dest)
+		{
+			stop = points;
+		}
+		else // Otherwise send up to the start of the next chunk
+		{
+			stop = dest * chunk;
+		}
+
+		// The count is the size of the vector
+		count = stop - start;
+		
+		// Send a vector with the start and end points
+		int* send_positions = malloc(count * sizeof(int));
+		for (int i = 0; i < count; i++)
+		{
+			send_positions[i] = positions[i + start];
+		}
+		
+		MPI_Send(send_positions, count, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD);
+	}
+
+
 	// Iterate through each time step in the collection
 	for (int i = 0; i < time_steps; i++)
 	{
@@ -165,18 +207,49 @@ void root_task(FILE** out_file, int i, double* time_stamps, int time_steps)
 		// Print a new line
 		fprintf(*out_file, "\n");
 	}
+
+	free(positions);
 }
 
-void client_task(int my_rank, int uni_size, double time, int time_steps)
+void client_task(int my_rank, int uni_size, int time_steps, int points)
 {
-	// Transmission variables
+	//
+	// Find the part of the string relevant to this node
+	//
+	
+	// Find how big each chunk is
+	int chunk = points / (uni_size - 1);
+
+	int start, stop;
+	start = (my_rank - 1) * chunk;
+	// If this is the last process to receive, get elements at the end as well
+	if (uni_size - 1 == my_rank)
+	{
+		stop = points;
+	}
+	else // Otherwise receive up to the start of the next chunk
+	{
+		stop = my_rank * chunk;
+	}
+
+	// Create the transmission variables
+	double recv_points;
+	int count, source, tag;
+	recv_points = source = tag = 0;
+	count = stop - start;
+	MPI_Status status;
+	
+	double* my_positions = malloc(count * sizeof(double));
+
+	MPI_Recv(my_positions, count, MPI_DOUBLE, source, tag, MPI_COMM_WORLD, &status);
+
+	// Transmission variables for the loop
 	double last_pos; // Last position of the string, to be sent
 	double first_pos; // First position, either found from the driver, or received from previous node
-	int count = 1;
+	count = 1;
 	int dest = my_rank + 1; // Send to next node
-	int source = my_rank - 1; // Receive from previous node
-	int tag = 0;
-	MPI_Status status;
+	source = my_rank - 1; // Receive from previous node
+
 
 	// Iterate through each time step in the collection
 	for (int i = 0; i < time_steps; i++)
@@ -188,7 +261,7 @@ void client_task(int my_rank, int uni_size, double time, int time_steps)
 		// Unless last node send initial value of final point to next node
 		if (my_rank != uni_size - 1)
 		{
-			MPI_Send(last_pos, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
+			MPI_Send(&last_pos, count, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD);
 		}
 	
 		//
@@ -199,13 +272,13 @@ void client_task(int my_rank, int uni_size, double time, int time_steps)
 		if (my_rank == 1)
 		{
 			// Driver
-			first_pos = driver(time);
+//			first_pos = driver(time);
 		}
 	
 		// If not node 1 get message from previous node
 		if (my_rank != 1)
 		{
-			MPI_Recv(&first_pos, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+			MPI_Recv(&first_pos, count, MPI_DOUBLE, source, tag, MPI_COMM_WORLD, &status);
 		}
 	
 		// Update positions
