@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 
 // Declare the functions that will be called within main
 // Note how declaration lines are similar to the initial line
@@ -12,6 +13,10 @@ void update_positions(double* positions, int points, double time);
 int generate_timestamps(double* time_stamps, int time_steps, double step_size);
 double driver(double time);
 void print_header(FILE** p_out_file, int points);
+
+// Necessary for timing
+double to_second_float(struct timespec in_time);
+struct timespec calculate_runtime(struct timespec start_time, struct timespec end_time);
 
 // Struct for inputs
 struct Input
@@ -57,6 +62,14 @@ struct Input check_args(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
+	// For timing 
+	struct timespec start_time, end_time, time_diff;
+	double runtime = 0.0;
+	FILE *data_file;
+	
+	// Get the time
+	timespec_get(&start_time, TIME_UTC);
+	
 	// Declare and initialise the numerical argument variables
 	struct Input in = check_args(argc, argv);
 	
@@ -111,6 +124,17 @@ int main(int argc, char **argv)
 	// closes the file
 	fclose(out_file);
 
+	// Get end time
+	timespec_get(&end_time, TIME_UTC);
+
+	time_diff = calculate_runtime(start_time, end_time);
+	runtime = to_second_float(time_diff);
+
+	// Save the time taken to a file
+	data_file = fopen("./data/string_serial_time.txt", "a");
+	// File format: no. processors (1 as it is serial), points, cycles, samples, time
+	fprintf(data_file, "1, %d, %d, %d, %lf\n", points, cycles, samples, runtime);
+	fclose(data_file);
 	return 0;
 }
 
@@ -206,28 +230,47 @@ void print_vector(double vector[], int size)
 	}
 }
 
-//// Define a function that checks the arguments to make sure they'll do what you need
-//int check_args(int argc, char **argv)
-//{
-//	int points, cycles, samples;
-//
-//	// Check the number of arguments
-//	if (argc == 4) // Program name and 3 numerical arguments
-//	{
-//		points = atoi(argv[1]);
-//		cycles = atoi(argv[2]);
-//		samples = atoi(argv[3]);
-//	}
-//	else // The number of arguments is incorrect
-//	{
-//		// Raise an error
-//		fprintf(stderr, "ERROR: You did not provide the correct numerical arguments!\n");
-//		fprintf(stderr, "Correct use: %s [POINTS] [CYCLES] [SAMPLES]\n", argv[0]);
-//
-//		// Exit COMPLETELY
-//		exit (-1);
-//	}
-//	
-//	printf("%d, %d, %d \n", points, cycles, samples);
-//	return points, cycles, samples;
-//}
+double to_second_float(struct timespec in_time)
+{
+	// Create and initialise the variables
+	float out_time = 0.0;
+	long int seconds, nanoseconds;
+	seconds = nanoseconds = 0;
+
+	// Extract the elements from in_time
+	seconds = in_time.tv_sec;
+	nanoseconds = in_time.tv_nsec;
+
+	// Calculate the time in seconds by adding the seconds and the nanoseconds divided by 1e9
+	out_time = seconds + nanoseconds/1e9;
+
+	// Return the time as a double
+	return out_time;
+}
+
+struct timespec calculate_runtime(struct timespec start_time, struct timespec end_time)
+{
+	// Create and initialise the variables
+	struct timespec time_diff;
+	long int seconds, nanoseconds;
+	seconds = nanoseconds = 0;
+	double runtime = 0.0;
+
+	// Extract the elements from start_time and end_time
+	seconds = end_time.tv_sec - start_time.tv_sec;
+	nanoseconds = end_time.tv_nsec - start_time.tv_nsec;
+
+	// If the ns part is negative
+	if (nanoseconds < 0)
+	{
+		// "carry the one!"
+		seconds = seconds - 1;
+		nanoseconds = ((long int) 1e9) - nanoseconds;
+	}
+
+	// Create the runtime
+	time_diff.tv_sec = seconds;
+	time_diff.tv_nsec = nanoseconds;
+
+	return time_diff;
+}
