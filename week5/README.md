@@ -40,5 +40,18 @@ The correct usage is:
 ```animate_line_params.py [FILENAME_IN] [FILENAME_OUT] (optional [COLOUR])```
 
 
+## Parallelising the code
+
+### Strategy for parallelising
+
+The code will break the string into as many chunks as there are processors minus 1. Except for the root node (node 0) and node 1 which will host the driver each node will take the position of the last point on the previous node at the previous timestamp in order to propagate the wave. Each node except for the last will broadcast the position of their final point to the adjoining node.
+
+The results from each timestamp will be broadcast to the root node which will aggregate them and write them to the output file.
+
+### Strategy for aggregating the data
+
+In order to minimise the overhead associated with opening and saving the file each time, the data will be stored in memory until the program is finished, and then the root node will save the file.
+
+
 
 
