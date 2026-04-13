@@ -309,14 +309,12 @@ void client_task(int my_rank, int uni_size, int points, double* time_stamps, int
 		else // If not node 1 get message from previous node
 		{
 			MPI_Recv(&first_pos, count, MPI_DOUBLE, source, tag_points, MPI_COMM_WORLD, &status);
-			printf("Received: %f\n", first_pos);
 		}
 		
 		// Unless last node send initial value of final point to next node
 		if (my_rank != uni_size - 1)
 		{
 			MPI_Send(&last_pos, count, MPI_DOUBLE, dest, tag_points, MPI_COMM_WORLD);
-			printf("Sent: %f\n", last_pos);
 		}	
 		// Now update the string
 		
