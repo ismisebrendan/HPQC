@@ -7,7 +7,7 @@
 void initialise_vector(double vector[], int size, double initial);
 void print_vector(double vector[], int size);
 int sum_vector(int vector[], int size);
-void update_positions(double* positions, int points, double time);
+void update_positions(double* positions, int points, double first_pos);
 int generate_timestamps(double* time_stamps, int time_steps, double step_size);
 double driver(double time);
 void print_header(FILE** p_out_file, int points);
@@ -40,7 +40,7 @@ struct Input check_args(int argc, char **argv)
 			i.out = argv[4];
 		}
 		else
-			i.out = "data/string_wave.csv";
+			i.out = "data/string_wave_parallel.csv";
 	}
 	else // The number of arguments is incorrect
 	{
@@ -102,6 +102,7 @@ int main(int argc, char **argv)
 		print_header(&out_file, points);
 	}
 
+	// Carry out the appropriate task
 	if (my_rank == 0)
 	{
 		root_task(&out_file, uni_size, points, time_stamps, time_steps);
@@ -152,21 +153,24 @@ void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, i
 {
 	// Create a vector variable for the current positions, only the root needs this
 	double* positions = (double*) malloc(points * sizeof(double));
+	
+	printf("Running Root task\n");
+
 	// And initialise every element to zero
 	initialise_vector(positions, points, 0.0);
 	
-	// Find how big each chunk is
-	int chunk = points / (uni_size - 1);
-	int start, stop;
-
-	// 
 	// Send the chunks to each node
-	//
+	
 	// Transmission variables
 	int count, tag;
 	tag = 0;
 
 	// Send a chunk to each other node
+	
+	// Find how big each chunk is
+	int chunk = points / (uni_size - 1);
+	int start, stop;
+	
 	for (int dest = 1; dest < uni_size; dest++)
 	{
 		start = (dest - 1) * chunk;
@@ -192,36 +196,74 @@ void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, i
 		}
 		
 		MPI_Send(send_positions, count, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD);
+		free(send_positions);
 	}
+	
+	printf("Sent chunks to other nodes\n");
 
+	// Transmission variables for receiving the chunks
+	double* recv_points;
+	int tag_chunk = 2; // Tag to receive chunks from other nodes
+	MPI_Status status;
 
 	// Iterate through each time step in the collection
 	for (int i = 0; i < time_steps; i++)
 	{
+		printf("Root time step: %d\n", i);
+
 		// Print an index and time stamp
 		fprintf(*out_file, "%d, %lf", i, time_stamps[i]);
 	
-		// Receive the chunks from the other nodes
+		// Receive the chunks from the other nodes and update positions with them
+		for (int source = 1; source < uni_size; source++)
+		{
+			start = (source - 1) * chunk;
+			
+			if (uni_size - 1 == source)
+			{
+				stop = points;
+			}
+			else
+			{
+				stop = source * chunk;
+			}
+			// The count is the size of the vector
+			count = stop - start;
+			
+			// Receive the message
+			MPI_Recv(recv_points, count, MPI_DOUBLE, source, tag_chunk, MPI_COMM_WORLD, &status);
+			
+			// Now update the positions vector
+			for (int j = start; j < stop; j++)
+		        {
+		                positions[j] = recv_points[j - start];
+		        }
+		}	
 	
-	
+		// Iterate over all of the points on the line
+		for (int j = 0; j < points; j++)
+		{
+			// Print each y-position to a file
+			fprintf(*out_file, ", %lf", positions[j]);
+		}
 		// Print a new line
 		fprintf(*out_file, "\n");
 	}
 
+	free(recv_points);
 	free(positions);
 }
 
 void client_task(int my_rank, int uni_size, int time_steps, int points)
 {
-	//
-	// Find the part of the string relevant to this node
-	//
+	// Receive the part of the string relevant to this node
 	
 	// Find how big each chunk is
 	int chunk = points / (uni_size - 1);
 
 	int start, stop;
 	start = (my_rank - 1) * chunk;
+	
 	// If this is the last process to receive, get elements at the end as well
 	if (uni_size - 1 == my_rank)
 	{
@@ -240,51 +282,49 @@ void client_task(int my_rank, int uni_size, int time_steps, int points)
 	MPI_Status status;
 	
 	double* my_positions = malloc(count * sizeof(double));
-
+	
 	MPI_Recv(my_positions, count, MPI_DOUBLE, source, tag, MPI_COMM_WORLD, &status);
 
 	// Transmission variables for the loop
-	double last_pos; // Last position of the string, to be sent
+	double last_pos; // Position of the last point on this chunk of the string, to be sent
 	double first_pos; // First position, either found from the driver, or received from previous node
 	count = 1;
 	int dest = my_rank + 1; // Send to next node
 	source = my_rank - 1; // Receive from previous node
-
-
+	int tag_points = 1; // Tag for messages about the last point on each chunk
+	int tag_root = 2; // Tag for sending chunks to root
+	
 	// Iterate through each time step in the collection
 	for (int i = 0; i < time_steps; i++)
 	{
-		//
-		// Send values from previous iteration
-		//
-	
-		// Unless last node send initial value of final point to next node
-		if (my_rank != uni_size - 1)
-		{
-			MPI_Send(&last_pos, count, MPI_DOUBLE, dest, tag, MPI_COMM_WORLD);
-		}
-	
-		//
-		// Now update the string
-		//
+		// First get the first value
 	
 		// If node 1 run the driver
 		if (my_rank == 1)
 		{
 			// Driver
-//			first_pos = driver(time);
+			first_pos = driver(my_positions[i]);
 		}
-	
-		// If not node 1 get message from previous node
-		if (my_rank != 1)
+		else // If not node 1 get message from previous node
 		{
-			MPI_Recv(&first_pos, count, MPI_DOUBLE, source, tag, MPI_COMM_WORLD, &status);
+			MPI_Recv(&first_pos, count, MPI_DOUBLE, source, tag_points, MPI_COMM_WORLD, &status);
+		}
+		
+		// Unless last node send initial value of final point to next node
+		if (my_rank != uni_size - 1)
+		{
+			MPI_Send(&last_pos, count, MPI_DOUBLE, dest, tag_points, MPI_COMM_WORLD);
 		}
 	
+		// Now update the string
+		
 		// Update positions
-	
-		// Send all values to root
-	}	
+		update_positions(my_positions, count, first_pos);		
+		// Send all values to root	
+		MPI_Send(my_positions, chunk, MPI_DOUBLE, 0, tag_root, MPI_COMM_WORLD);
+	}
+
+	free(my_positions);
 
 }
 
@@ -296,14 +336,14 @@ double driver(double time)
 }
 
 // defines a function to update the positions
-void update_positions(double* positions, int points, double time)
+void update_positions(double* positions, int points, double first_pos)
 {
 	// creates a temporary vector variable for the new positions
         double* new_positions = (double*) malloc(points * sizeof(double));
 
 	// initialises the index
 	int i = 0;
-	new_positions[i] = driver(time);
+	new_positions[i] = first_pos;
 	// creates new positions by setting value of previous element 
 	for (i = 1; i < points; i++)
 	{
