@@ -2,13 +2,15 @@
 
 ## Files in this directory
 
+Note: when compiling any of the ```.c``` files in this directory ```-lm``` should be added to the end of the statement in order to include the ```math.h``` library.
+
  - ```animate_line_file.py``` - File copied from course directory.
  - ```animate_line.py``` - File copied from course directory.
  - ```string_wave.c``` - File copied from course directory.
  - ```sample_animation.gif``` - Animation created by copie files.
  - ```string_params.c``` - Edited version of ```string_wave.c``` that avoids the hardcoding of various values used when simulating the vibrating string. Takes three numerical inputs: the number of points to simulate on the string, the number of cycles to simulate, and the number of samples to take per cycle. Also optionally takes the path of an output file, otherwise it defaults to ```data/string_wave.csv```.
  - ```animate_line_params.py``` - Edited version of ```animate_line_file.py``` that avoids hardcoding the output file and colour of the points of the animation (the input file was already not hardcoded).
-
+ - ```string_parallel.c``` - A parallelised version of ```string_params.c```. Takes three numerical inputs: the number of points to simulate on the string, the number of cycles to simulate, and the number of samples to take per cycle. Also optionally takes the path of an output file, otherwise it defaults to ```data/string_wave.csv```. [AN MPI FILE]
 
 ## Removing hardcoding
 
