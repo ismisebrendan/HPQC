@@ -13,7 +13,7 @@ double driver(double time);
 void print_header(FILE** p_out_file, int points);
 void check_uni_size(int uni_size);
 void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, int time_steps);
-void client_task(int my_rank, int uni_size, int time_steps, int points);
+void client_task(int my_rank, int uni_size, int points, double* time_stamps, int time_steps);
 
 // Struct for inputs
 struct Input
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		client_task(my_rank, uni_size, time_steps, points);
+		client_task(my_rank, uni_size, points, time_stamps, time_steps);
 	}
 //		// updates the position using a function
 //		update_positions(positions, points, time_stamps[i]);
@@ -205,8 +205,6 @@ void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, i
 	// Iterate through each time step in the collection
 	for (int i = 0; i < time_steps; i++)
 	{
-		printf("Root time step: %d, of %d \n", i, time_steps);
-
 		// Print an index and time stamp
 		fprintf(*out_file, "%d, %lf", i, time_stamps[i]);
 
@@ -214,8 +212,6 @@ void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, i
 		// Receive the chunks from the other nodes and update positions with them
 		for (int source = 1; source < uni_size; source++)
 		{
-			printf("Preparing to receive from %d\n", source);			
-
 			start = (source - 1) * chunk;
 			
 			if (uni_size - 1 == source)
@@ -256,7 +252,7 @@ void root_task(FILE** out_file, int uni_size, int points, double* time_stamps, i
 	free(positions);
 }
 
-void client_task(int my_rank, int uni_size, int time_steps, int points)
+void client_task(int my_rank, int uni_size, int points, double* time_stamps, int time_steps)
 {
 	// Receive the part of the string relevant to this node
 	
@@ -278,19 +274,19 @@ void client_task(int my_rank, int uni_size, int time_steps, int points)
 
 	// Create the transmission variables
 	double recv_points;
-	int count, source, tag;
+	int source, tag;
 	recv_points = source = tag = 0;
-	count = stop - start;
+	chunk = stop - start;
 	MPI_Status status;
 	
-	double* my_positions = malloc(count * sizeof(double));
+	double* my_positions = malloc(chunk * sizeof(double));
 	
-	MPI_Recv(my_positions, count, MPI_DOUBLE, source, tag, MPI_COMM_WORLD, &status);
+	MPI_Recv(my_positions, chunk, MPI_DOUBLE, source, tag, MPI_COMM_WORLD, &status);
 
 	// Transmission variables for the loop
 	double last_pos; // Position of the last point on this chunk of the string, to be sent
 	double first_pos; // First position, either found from the driver, or received from previous node
-	count = 1;
+	int count = 1;
 	int dest = my_rank + 1; // Send to next node
 	source = my_rank - 1; // Receive from previous node
 	int tag_points = 1; // Tag for messages about the last point on each chunk
@@ -299,29 +295,33 @@ void client_task(int my_rank, int uni_size, int time_steps, int points)
 	// Iterate through each time step in the collection
 	for (int i = 0; i < time_steps; i++)
 	{
+		// Assign the last position
+		last_pos = my_positions[chunk - 1];
+
 		// First get the first value
 	
 		// If node 1 run the driver
 		if (my_rank == 1)
 		{
 			// Driver
-			first_pos = driver(my_positions[i]);
+			first_pos = driver(time_stamps[i]);
 		}
 		else // If not node 1 get message from previous node
 		{
 			MPI_Recv(&first_pos, count, MPI_DOUBLE, source, tag_points, MPI_COMM_WORLD, &status);
+			printf("Received: %f\n", first_pos);
 		}
 		
 		// Unless last node send initial value of final point to next node
 		if (my_rank != uni_size - 1)
 		{
 			MPI_Send(&last_pos, count, MPI_DOUBLE, dest, tag_points, MPI_COMM_WORLD);
-		}
-	
+			printf("Sent: %f\n", last_pos);
+		}	
 		// Now update the string
 		
 		// Update positions
-		update_positions(my_positions, count, first_pos);		
+		update_positions(my_positions, chunk, first_pos);		
 		// Send all values to root	
 		MPI_Send(my_positions, chunk, MPI_DOUBLE, 0, tag_root, MPI_COMM_WORLD);
 	}
@@ -414,7 +414,7 @@ void print_vector(double vector[], int size)
 void check_uni_size(int uni_size)
 {
 	// Set the minimum universe size
-	int min_uni_size = 1;
+	int min_uni_size = 2;
 	// Check there are sufficient tasks to communicate with
 	if (uni_size >= min_uni_size)
 	{
