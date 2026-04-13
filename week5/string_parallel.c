@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <mpi.h>
 #include <math.h>
 
 // Declare the functions that will be called within main
@@ -12,6 +13,8 @@ void update_positions(double* positions, int points, double time);
 int generate_timestamps(double* time_stamps, int time_steps, double step_size);
 double driver(double time);
 void print_header(FILE** p_out_file, int points);
+void check_uni_size(int uni_size);
+void root_task(FILE** out_file, int i, double* time_stamps);
 
 // Struct for inputs
 struct Input
@@ -57,6 +60,23 @@ struct Input check_args(int argc, char **argv)
 
 int main(int argc, char **argv)
 {
+	// Error handling variable
+	int ierror = 0;
+	
+	// Intialise MPI
+	ierror = MPI_Init(&argc, &argv);
+
+	// Declare and initialise rank and size
+	int my_rank, uni_size;
+	my_rank = uni_size = 0;
+
+	// Get the rank and world size
+	ierror = MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+	ierror = MPI_Comm_size(MPI_COMM_WORLD, &uni_size);
+	
+	// Check the universe size is correct
+	check_uni_size(uni_size);
+
 	// Declare and initialise the numerical argument variables
 	struct Input in = check_args(argc, argv);
 	
@@ -80,19 +100,21 @@ int main(int argc, char **argv)
 	// and initialises every element to zero
 	initialise_vector(positions, points, 0.0);
 
-	// creates a file
 	FILE* out_file;
-     	out_file = fopen(out, "w");
-	print_header(&out_file, points);
+	// Create a file if root node
+	if (my_rank == 0)
+	{
+     		out_file = fopen(out, "w");
+		print_header(&out_file, points);
+	}
 
 	// iterates through each time step in the collection
 	for (int i = 0; i < time_steps; i++)
 	{
+		root_task(&out_file, i, time_stamps);
 		// updates the position using a function
 		update_positions(positions, points, time_stamps[i]);
 
-		// prints an index and time stamp
-		fprintf(out_file, "%d, %lf", i, time_stamps[i]);
 
 		// iterates over all of the points on the line
 		for (int j = 0; j < points; j++)
@@ -108,8 +130,11 @@ int main(int argc, char **argv)
 	free(time_stamps);
 	free(positions);
 
-	// closes the file
-	fclose(out_file);
+	// Close the file if root node
+	if (my_rank == 0)
+	{
+		fclose(out_file);
+	}
 
 	return 0;
 }
@@ -124,6 +149,17 @@ void print_header(FILE** p_out_file, int points)
 		fprintf(*p_out_file, ", y[%d]", j);
 	}
 	fprintf(*p_out_file, "\n");
+}
+
+void root_task(FILE** out_file, int i, double* time_stamps)
+{
+	// Print an index and time stamp
+	fprintf(*out_file, "%d, %lf", i, time_stamps[i]);
+	
+	// Receive the chunks from the other nodes
+	
+	// Write these to a file
+	
 }
 
 // defines a simple harmonic oscillator as the driving force
@@ -206,28 +242,23 @@ void print_vector(double vector[], int size)
 	}
 }
 
-//// Define a function that checks the arguments to make sure they'll do what you need
-//int check_args(int argc, char **argv)
-//{
-//	int points, cycles, samples;
-//
-//	// Check the number of arguments
-//	if (argc == 4) // Program name and 3 numerical arguments
-//	{
-//		points = atoi(argv[1]);
-//		cycles = atoi(argv[2]);
-//		samples = atoi(argv[3]);
-//	}
-//	else // The number of arguments is incorrect
-//	{
-//		// Raise an error
-//		fprintf(stderr, "ERROR: You did not provide the correct numerical arguments!\n");
-//		fprintf(stderr, "Correct use: %s [POINTS] [CYCLES] [SAMPLES]\n", argv[0]);
-//
-//		// Exit COMPLETELY
-//		exit (-1);
-//	}
-//	
-//	printf("%d, %d, %d \n", points, cycles, samples);
-//	return points, cycles, samples;
-//}
+// Ensure the universe size is ok
+void check_uni_size(int uni_size)
+{
+	// Set the minimum universe size
+	int min_uni_size = 1;
+	// Check there are sufficient tasks to communicate with
+	if (uni_size >= min_uni_size)
+	{
+		return;
+	}
+	else
+	{
+		// Raise an error
+		fprintf(stderr, "Unable to communicate with fewer than %d processes.", min_uni_size);
+		fprintf(stderr, "MPI communicator size = %d\n", uni_size);
+
+		// And exit COMPLETELY
+		exit(-1);
+	}
+}
