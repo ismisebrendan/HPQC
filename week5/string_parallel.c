@@ -4,8 +4,6 @@
 #include <math.h>
 
 // Declare the functions that will be called within main
-// Note how declaration lines are similar to the initial line
-// of a function definition, but with a semicolon at the end;
 void initialise_vector(double vector[], int size, double initial);
 void print_vector(double vector[], int size);
 int sum_vector(int vector[], int size);
@@ -15,6 +13,7 @@ double driver(double time);
 void print_header(FILE** p_out_file, int points);
 void check_uni_size(int uni_size);
 void root_task(FILE** out_file, int i, double* time_stamps);
+void client_task(int my_rank, int uni_size, double time);
 
 // Struct for inputs
 struct Input
@@ -100,8 +99,8 @@ int main(int argc, char **argv)
 	// and initialises every element to zero
 	initialise_vector(positions, points, 0.0);
 
-	FILE* out_file;
 	// Create a file if root node
+	FILE* out_file;
 	if (my_rank == 0)
 	{
      		out_file = fopen(out, "w");
@@ -111,7 +110,14 @@ int main(int argc, char **argv)
 	// iterates through each time step in the collection
 	for (int i = 0; i < time_steps; i++)
 	{
-		root_task(&out_file, i, time_stamps);
+		if (my_rank == 0)
+		{
+			root_task(&out_file, i, time_stamps);
+		}
+		else
+		{
+
+		}
 		// updates the position using a function
 		update_positions(positions, points, time_stamps[i]);
 
@@ -122,8 +128,6 @@ int main(int argc, char **argv)
 			// prints each y-position to a file
 			fprintf(out_file, ", %lf", positions[j]);
 		}
-		// prints a new line
-		fprintf(out_file, "\n");
 	}
 
 	// if we use malloc, must free when done!
@@ -158,8 +162,54 @@ void root_task(FILE** out_file, int i, double* time_stamps)
 	
 	// Receive the chunks from the other nodes
 	
-	// Write these to a file
 	
+	// Print a new line
+	fprintf(*out_file, "\n");
+}
+
+void client_task(int my_rank, int uni_size, double time)
+{
+	// Transmission variables
+	double last_pos; // Last position of the string, to be sent
+	double first_pos; // First position, either found from the driver, or received from previous node
+	int count = 1;
+	int dest = my_rank + 1; // Send to next node
+	int source = my_rank - 1; // Receive from previous node
+	int tag = 0;
+	MPI_Status status;
+
+	//
+	// Send values from previous iteration
+	//
+
+	// Unless last node send initial value of final point to next node
+	if (my_rank != uni_size - 1)
+	{
+		MPI_Send(last_pos, count, MPI_INT, dest, tag, MPI_COMM_WORLD);
+	}
+
+	//
+	// Now update the string
+	//
+
+	// If node 1 run the driver
+	if (my_rank == 1)
+	{
+		// Driver
+		first_pos = driver(time);
+	}
+
+	// If not node 1 get message from previous node
+	if (my_rank != 1)
+	{
+		MPI_Recv(&first_pos, count, MPI_INT, source, tag, MPI_COMM_WORLD, &status);
+	}
+
+	// Update positions
+
+	// Send all values to root
+	
+
 }
 
 // defines a simple harmonic oscillator as the driving force
